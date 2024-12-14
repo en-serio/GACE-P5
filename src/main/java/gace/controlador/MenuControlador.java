@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import javax.swing.plaf.synth.Region;
 import java.sql.Connection;
 
 public class MenuControlador {
@@ -63,7 +62,7 @@ public class MenuControlador {
 
     public void menu(Stage primaryStage) {
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Escena.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/Escena.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
@@ -72,7 +71,7 @@ public class MenuControlador {
             primaryStage.show();
 
             this.contenedorCentral = (AnchorPane) scene.lookup("#contenedorCentral");
-            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/MenuVista.fxml"));
+            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuVista.fxml"));
             Parent menuRoot = menuLoader.load();
 
             contenedorCentral.getChildren().clear();
