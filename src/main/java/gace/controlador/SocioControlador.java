@@ -132,6 +132,8 @@ public class SocioControlador {
         return new SocioInfantil(nombre, apellido, noTutor);
     }
 
+
+
 //    public SocioInfantil nouSociInfantil(String nombre, String apellido, int noTutor) {
 //        if(noTutor == 0){
 //            return null;
