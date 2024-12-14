@@ -53,4 +53,3 @@ buildNumber.properties
 /src/main/resources/hibernate.cfg.xml
 /src/main/target/classes/hibernate.cfg.xml
 
-out
