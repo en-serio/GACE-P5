@@ -3,16 +3,23 @@ package gace.controlador;
 import gace.modelo.utils.BBDDUtil;
 import gace.vista.DatosUtil;
 import gace.vista.PrimVista;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
-import java.net.ConnectException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class MenuControlador {
     private DatosUtil datosUtil;
     private ExcursionControlador excursionControlador;
     private SocioControlador socioControlador;
     private InscripcionControlador inscripcionControlador;
+
+    @FXML
+    private AnchorPane contenedorCentral;
 
 
     public MenuControlador() {
@@ -52,35 +59,63 @@ public class MenuControlador {
         ventana.show();
     }
 
-    public boolean menu() {
-        int opcion = datosUtil.mostrarMenu();
 
-        switch (opcion) {
-            case 1:
-                menuSocio();
-                break;
-            case 2:
-                menuExcursion();
-                break;
-            case 3:
-                menuInscripcion();
-                break;
-            case 4:
-                if (pruebaConexion()) {
-                    System.out.println("Conexión establecida.");
-                } else {
-                    System.out.println("Error al conectar.");
-                }
-                break;
-            case 0:
-                datosUtil.mostrarError("Saliendo del programa...");
-                return false;
-            default:
-                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
-                break;
+    public void menu(Stage primaryStage) {
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/Escena.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("GACE - Gestión de Actividades Culturales y Excursiones");
+            primaryStage.show();
+
+            this.contenedorCentral = (AnchorPane) scene.lookup("#contenedorCentral");
+            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuVista.fxml"));
+            Parent menuRoot = menuLoader.load();
+
+            contenedorCentral.getChildren().clear();
+            contenedorCentral.getChildren().add(menuRoot);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
-        return true;
     }
+
+//    public boolean menu() {
+//        int opcion = datosUtil.mostrarMenu();
+//
+//        switch (opcion) {
+//            case 1:
+//                menuSocio();
+//                break;
+//            case 2:
+//                menuExcursion();
+//                break;
+//            case 3:
+//                menuInscripcion();
+//                break;
+//            case 4:
+//                if (pruebaConexion()) {
+//                    System.out.println("Conexión establecida.");
+//                } else {
+//                    System.out.println("Error al conectar.");
+//                }
+//                break;
+//            case 0:
+//                datosUtil.mostrarError("Saliendo del programa...");
+//                return false;
+//            default:
+//                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
+//                break;
+//        }
+//        return true;
+//    }
+
+
+    public void salir(){
+        System.exit(0);
+    }
+
 
     public boolean menuSocio(){
         int opcion = datosUtil.menuSocios();

@@ -50,7 +50,7 @@ buildNumber.properties
 
 
 .env
-/src/main/resources/
+/src/main/resources/hibernate.cfg.xml
 /src/main/target/classes/hibernate.cfg.xml
 
 out
