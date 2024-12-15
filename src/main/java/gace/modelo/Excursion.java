@@ -23,7 +23,9 @@ public class Excursion {
     @Column(name = "precio")
     private double precio;
 
-    public Excursion(int id, String descripcion, Date fecha, int noDias, double precio) {
+    public Excursion(int id,String codigo, String descripcion, Date fecha, int noDias, double precio) {
+        this.id = id;
+        this.codigo = codigo;
         this.descripcion = descripcion;
         this.fecha = fecha;
         this.noDias = noDias;

@@ -76,12 +76,12 @@ public class InscripcionControlador {
         return vistaInscripciones.vistaAyuda();
     }
 
-    public boolean novaInscripcio(int ayuda) {
-        if (ayuda == 1) {
-            if(!excursionControlador.mostrarExcursiones()){
-                return false;
-            }
-        }
+    public boolean novaInscripcio() {
+//        if (1 == 1) {
+//            if(!excursionControlador.mostrarExcursiones()){
+//                return false;
+//            }
+//        }
         int idExcursion = vistaInscripciones.pedirExcursionInsc();
         if (idExcursion == -1) {
             return false;
@@ -97,18 +97,18 @@ public class InscripcionControlador {
         } else if (tipo == 0) {
             return false;
         }
-        if(ayuda == 1){
-            boolean noHay = socioControlador.mostrarSocios(0,4);
-            if(!noHay){
-                return false;
-            }
-        }else{
-            List<Socio> todos = DAOFactory.getSocioDao().listar();
-            if(todos == null){
-                datosUtil.mostrarError("No hay socios");
-                return false;
-            }
-        }
+//        if(ayuda == 1){
+//            boolean noHay = socioControlador.mostrarSocios(0,4);
+//            if(!noHay){
+//                return false;
+//            }
+//        }else{
+//            List<Socio> todos = DAOFactory.getSocioDao().listar();
+//            if(todos == null){
+//                datosUtil.mostrarError("No hay socios");
+//                return false;
+//            }
+//        }
         int strSocio = vistaInscripciones.pedirSocioInsc();
         if (strSocio == 0) {
             return false;
@@ -130,82 +130,82 @@ public class InscripcionControlador {
         return socNoSocio + excCodigo;
     }
 
-    public boolean mostrarInscripcionesXExc() {
-        boolean hayExc = excursionControlador.mostrarExcursiones();
-        if(!hayExc){
-            return false;
-        }
-        Excursion exc = new Excursion();
-        int opcion = datosUtil.pedirOpcion("Seleccionar Excursión", "Por Código", "Por ID");
-        if(opcion == 0){
-            return false;
-        }else if(opcion == 1) {
-            String codigo = datosUtil.devString("Introduce el código de la excursión");
-            exc = DAOFactory.getExcursionDao().buscar(codigo);
-            if (exc == null) {
-                datosUtil.mostrarError("Excursión no encontrada");
-                return false;
-            }
-        }else{
-            int idExcursion = datosUtil.leerEntero(99999, "Introduce el ID de la excursión:\n");
-            exc = DAOFactory.getExcursionDao().buscar(idExcursion);
-            if (exc == null) {
-                datosUtil.mostrarError("Excursión no encontrada");
-                return false;
-            }
-        }
-        List<Inscripcion> inscripcions = DAOFactory.getInscripcionDao().listarXExc(exc);
-        /*
-        Aquesta funció ha de buscar tots els socis en una única cerca, no borrar no utilitzar
-        ArrayList<Inscripcion> inscripcions = DAOFactory.getInscripcionDao().listarInscXExc(exc);
-        */
-        if(inscripcions == null){
-            datosUtil.mostrarError("No hay inscripciones para esta excursión");
-            return false;
-        }
-        for (Inscripcion inscripcion : inscripcions) {
-            vistaInscripciones.mostrarInscripciones(inscripcion.toString());
-        }
-        return true;
-    }
+//    public boolean mostrarInscripcionesXExc() {
+//        boolean hayExc = excursionControlador.mostrarExcursiones();
+//        if(!hayExc){
+//            return false;
+//        }
+//        Excursion exc = new Excursion();
+//        int opcion = datosUtil.pedirOpcion("Seleccionar Excursión", "Por Código", "Por ID");
+//        if(opcion == 0){
+//            return false;
+//        }else if(opcion == 1) {
+//            String codigo = datosUtil.devString("Introduce el código de la excursión");
+//            exc = DAOFactory.getExcursionDao().buscar(codigo);
+//            if (exc == null) {
+//                datosUtil.mostrarError("Excursión no encontrada");
+//                return false;
+//            }
+//        }else{
+//            int idExcursion = datosUtil.leerEntero(99999, "Introduce el ID de la excursión:\n");
+//            exc = DAOFactory.getExcursionDao().buscar(idExcursion);
+//            if (exc == null) {
+//                datosUtil.mostrarError("Excursión no encontrada");
+//                return false;
+//            }
+//        }
+//        List<Inscripcion> inscripcions = DAOFactory.getInscripcionDao().listarXExc(exc);
+//        /*
+//        Aquesta funció ha de buscar tots els socis en una única cerca, no borrar no utilitzar
+//        ArrayList<Inscripcion> inscripcions = DAOFactory.getInscripcionDao().listarInscXExc(exc);
+//        */
+//        if(inscripcions == null){
+//            datosUtil.mostrarError("No hay inscripciones para esta excursión");
+//            return false;
+//        }
+//        for (Inscripcion inscripcion : inscripcions) {
+//            vistaInscripciones.mostrarInscripciones(inscripcion.toString());
+//        }
+//        return true;
+//    }
 
-    public Inscripcion buscarInscripcion() {
-        int buscar = datosUtil.pedirOpcion("Buscar Inscripcion", "Por Excursion", "Por Socio");
-        if(buscar == 0){
-            return null;
-        }
-        Excursion excursion = null;
-        Socio socio = null;
-        int idInscripcion = 0;
-        List<Inscripcion> insc = null;
-        Inscripcion inscripcion = null;
-        if(buscar == 1){
-            if(!mostrarInscripcionesXExc()){
-                return null;
-            }
-        } else {
-            socioControlador.mostrarSocios(0, 4);
-            socio = socioControlador.obtenerSocio();
-            if(socio == null){
-                return null;
-            }else if(socio instanceof SocioEstandar) {
-                insc = DAOFactory.getInscripcionDao().ListarXSocioEst(socio);
-            }else if(socio instanceof SocioFederado){
-                insc = DAOFactory.getInscripcionDao().ListarXSocioFed(socio);
-            }else{
-                insc = DAOFactory.getInscripcionDao().ListarXSocioInf(socio);
-            }
-            if(insc == null){
-                datosUtil.mostrarError("No hay inscripciones para este socio");
-                return null;
-            }
-            mostrarLista(insc);
-            idInscripcion = datosUtil.leerEntero(99999, "Introduce el ID de la inscripción: ");
-            return DAOFactory.getInscripcionDao().buscar(idInscripcion);
-        }
-        idInscripcion = datosUtil.leerEntero(99999, "Introduce el ID de la inscripción: ");
-        return DAOFactory.getInscripcionDao().buscar(idInscripcion);
-    }
+//    public Inscripcion buscarInscripcion() {
+//        int buscar = datosUtil.pedirOpcion("Buscar Inscripcion", "Por Excursion", "Por Socio");
+//        if(buscar == 0){
+//            return null;
+//        }
+//        Excursion excursion = null;
+//        Socio socio = null;
+//        int idInscripcion = 0;
+//        List<Inscripcion> insc = null;
+//        Inscripcion inscripcion = null;
+//        if(buscar == 1){
+//            if(!mostrarInscripcionesXExc()){
+//                return null;
+//            }
+//        } else {
+//            socioControlador.mostrarSocios(0, 4);
+//            socio = socioControlador.obtenerSocio();
+//            if(socio == null){
+//                return null;
+//            }else if(socio instanceof SocioEstandar) {
+//                insc = DAOFactory.getInscripcionDao().ListarXSocioEst(socio);
+//            }else if(socio instanceof SocioFederado){
+//                insc = DAOFactory.getInscripcionDao().ListarXSocioFed(socio);
+//            }else{
+//                insc = DAOFactory.getInscripcionDao().ListarXSocioInf(socio);
+//            }
+//            if(insc == null){
+//                datosUtil.mostrarError("No hay inscripciones para este socio");
+//                return null;
+//            }
+//            mostrarLista(insc);
+//            idInscripcion = datosUtil.leerEntero(99999, "Introduce el ID de la inscripción: ");
+//            return DAOFactory.getInscripcionDao().buscar(idInscripcion);
+//        }
+//        idInscripcion = datosUtil.leerEntero(99999, "Introduce el ID de la inscripción: ");
+//        return DAOFactory.getInscripcionDao().buscar(idInscripcion);
+//    }
 
     public void mostrarLista(List<Inscripcion> inscripciones){
         for(Inscripcion inscripcion : inscripciones){
@@ -247,19 +247,19 @@ public class InscripcionControlador {
     }
 
 
-    public boolean eliminarInscripcion(){
-        Inscripcion insc = buscarInscripcion();
-        if(insc == null){
-            datosUtil.mostrarError("Inscripción no encontrada");
-            return false;
-        }
-        if(!compararFecha(insc.getExcursion().getFecha())){
-            datosUtil.mostrarError("No se puede eliminar una inscripción de una excursión que ya ha pasado");
-            return false;
-        }
-        DAOFactory.getInscripcionDao().eliminar(insc.getIdInscripcion());
-        return true;
-    }
+//    public boolean eliminarInscripcion(){
+//        Inscripcion insc = buscarInscripcion();
+//        if(insc == null){
+//            datosUtil.mostrarError("Inscripción no encontrada");
+//            return false;
+//        }
+//        if(!compararFecha(insc.getExcursion().getFecha())){
+//            datosUtil.mostrarError("No se puede eliminar una inscripción de una excursión que ya ha pasado");
+//            return false;
+//        }
+//        DAOFactory.getInscripcionDao().eliminar(insc.getIdInscripcion());
+//        return true;
+//    }
 
     public boolean compararFecha(Date fecha){
         Date fechaActual = new Date();

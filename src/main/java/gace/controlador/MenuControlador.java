@@ -1,5 +1,6 @@
 package gace.controlador;
 
+import gace.modelo.Excursion;
 import gace.modelo.utils.BBDDUtil;
 import gace.vista.DatosUtil;
 import gace.vista.PrimVista;
@@ -7,10 +8,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 
 public class MenuControlador {
     private DatosUtil datosUtil;
@@ -20,7 +25,10 @@ public class MenuControlador {
 
     @FXML
     private AnchorPane contenedorCentral;
-
+    @FXML
+    private AnchorPane listaExcursion;
+    @FXML
+    private Scene escena;
 
     public MenuControlador() {
         this.datosUtil = new DatosUtil();
@@ -65,12 +73,12 @@ public class MenuControlador {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/Escena.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-
+            this.escena = scene;
             primaryStage.setScene(scene);
             primaryStage.setTitle("GACE - Gestión de Actividades Culturales y Excursiones");
             primaryStage.show();
 
-            this.contenedorCentral = (AnchorPane) scene.lookup("#contenedorCentral");
+            contenedorCentral = (AnchorPane) escena.lookup("#contenedorCentral");
             FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuVista.fxml"));
             Parent menuRoot = menuLoader.load();
 
@@ -80,43 +88,54 @@ public class MenuControlador {
             System.err.println(e.getMessage());
         }
     }
-
-//    public boolean menu() {
-//        int opcion = datosUtil.mostrarMenu();
-//
-//        switch (opcion) {
-//            case 1:
-//                menuSocio();
-//                break;
-//            case 2:
-//                menuExcursion();
-//                break;
-//            case 3:
-//                menuInscripcion();
-//                break;
-//            case 4:
-//                if (pruebaConexion()) {
-//                    System.out.println("Conexión establecida.");
-//                } else {
-//                    System.out.println("Error al conectar.");
-//                }
-//                break;
-//            case 0:
-//                datosUtil.mostrarError("Saliendo del programa...");
-//                return false;
-//            default:
-//                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
-//                break;
-//        }
-//        return true;
-//    }
-
+    public void initialize() {
+        if (contenedorCentral != null) {
+            System.out.println("contenedorCentral ha sido inicializado correctamente.");
+        } else {
+            System.err.println("contenedorCentral es null en initialize.");
+        }
+    }
 
     public void salir(){
         System.exit(0);
     }
 
+    public boolean menuExcursion(){
+        ArrayList<Excursion> excs = excursionControlador.falsalistaExc();
+        if(excs == null){
+            datosUtil.mostrarError("No hay excursiones para mostrar");
+            return false;
+        }
+        try{
+            this.contenedorCentral = (AnchorPane) escena.lookup("#contenedorCentral");
+            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuExcursion.fxml"));
+            Parent menuRoot = menuLoader.load();
 
+            contenedorCentral.getChildren().clear();
+            contenedorCentral.getChildren().add(menuRoot);
+
+            listaExcursion = (AnchorPane) escena.lookup("#listaExcursion");
+            for (Excursion exc : excs) {
+                Label label = new Label("ID: " + exc.getId() + " Código: " + exc.getCodigo() + " " + exc.getDescripcion());
+
+                VBox socioBox = new VBox(5, label);
+                socioBox.setStyle("-fx-border-color: gray; -fx-padding: 10; -fx-background-color: #f9f9f9;");
+
+                listaExcursion.getChildren().add(socioBox);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return true;
+    }
+//        excursionControlador.menuExcursion(contenedorCentral, escena);
+//        return true;
+//    }
+    public boolean menuSocio(){
+        System.out.println("menuSocio");
+        return true;
+    }
+/*
     public boolean menuSocio(){
         int opcion = datosUtil.menuSocios();
         switch (opcion) {
@@ -150,8 +169,6 @@ public class MenuControlador {
         return true;
     }
 
-    public boolean menuExcursion(){
-        int opcion = datosUtil.menuExcursiones();
         switch (opcion) {
             case 1:
                 excursionControlador.novaExcursio();
@@ -175,31 +192,35 @@ public class MenuControlador {
                 break;
         }
         return true;
-    }
 
-    public boolean menuInscripcion(){
-        int opcion = datosUtil.menuInscripciones();
-        switch (opcion) {
-            case 1:
-                inscripcionControlador.novaInscripcio(1);
-                break;
-            case 2:
-                inscripcionControlador.mostrarInscripcionesXExc();
-                break;
-            case 3:
-                inscripcionControlador.eliminarInscripcion();
-                break;
-            case 4:
-                inscripcionControlador.buscarInscripcion();
-                break;
-            case 0:
-                return false;
-            default:
-                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
-                break;
-        }
+    }*/
+
+    public boolean menuInscripcion() {
+
         return true;
     }
+//        int opcion = datosUtil.menuInscripciones();
+//        switch (opcion) {
+//            case 1:
+//                //inscripcionControlador.novaInscripcio(1);
+//                break;
+//            case 2:
+//                inscripcionControlador.mostrarInscripcionesXExc();
+//                break;
+//            case 3:
+//                inscripcionControlador.eliminarInscripcion();
+//                break;
+//            case 4:
+//                inscripcionControlador.buscarInscripcion();
+//                break;
+//            case 0:
+//                return false;
+//            default:
+//                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
+//                break;
+//        }
+//        return true;
+//    }
 
 
 

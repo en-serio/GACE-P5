@@ -6,6 +6,13 @@ import gace.modelo.dao.DAOFactory;
 import gace.modelo.dao.ExcursionDao;
 import gace.vista.DatosUtil;
 import gace.vista.VistaExcursion;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,6 +24,8 @@ public class ExcursionControlador {
     private DatosUtil datosUtil;
     private VistaExcursion vistaExcursion;
     private ExcursionDao excursionDao;
+    @FXML
+    private AnchorPane listaExcursion;
 
     public ExcursionControlador() {
         this.vistaExcursion = new VistaExcursion();
@@ -54,16 +63,13 @@ public class ExcursionControlador {
         return dateFormat.parse(fechaString);
     }
 
-    public boolean mostrarExcursiones(){
+    public ArrayList<Excursion> mostrarExcursiones(){
         ArrayList<Excursion> excursiones = DAOFactory.getExcursionDao().listar();
         if(excursiones == null){
             datosUtil.mostrarError("No hay excursiones para mostrar");
-            return false;
+            return null;
         }
-        for(Excursion excursion : excursiones){
-            vistaExcursion.detalleExcursion(excursion.toString());
-        }
-        return true;
+        return excursiones;
     }
     public Excursion pedirExcursion(){
         String codigo = vistaExcursion.pedirExc();
@@ -139,6 +145,45 @@ public class ExcursionControlador {
             datosUtil.mostrarInfo("Se han cancelado "+cantidad+" inscripciones");
         }
         return false;
+    }
+
+    public void menuExcursion(AnchorPane contenedorCentral, Scene scene){
+        //ArrayList<Excursion> excs = DAOFactory.getExcursionDao().listar();
+        ArrayList<Excursion> excs = falsalistaExc();
+        if(excs == null){
+            datosUtil.mostrarError("No hay excursiones para mostrar");
+            return;
+        }
+        try{
+            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuExcursion.fxml"));
+            Parent menuRoot = menuLoader.load();
+
+            contenedorCentral.getChildren().clear();
+            contenedorCentral.getChildren().add(menuRoot);
+
+            listaExcursion = (AnchorPane) scene.lookup("#listaExcursion");
+            for (Excursion exc : excs) {
+                Label label = new Label("ID: " + exc.getId() + " Código: " + exc.getCodigo() + " " + exc.getDescripcion());
+
+                VBox socioBox = new VBox(5, label);
+                socioBox.setStyle("-fx-border-color: gray; -fx-padding: 10; -fx-background-color: #f9f9f9;");
+
+                listaExcursion.getChildren().add(socioBox);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public ArrayList<Excursion> falsalistaExc(){
+        ArrayList<Excursion> excs = new ArrayList<>();
+        excs.add(new Excursion(1,"EXC1", "Excursión a la playa", new Date(), 2, 100.0));
+        excs.add(new Excursion(2,"EXC2", "Excursión a la montaña", new Date(), 3, 150.0));
+        excs.add(new Excursion(3,"EXC3", "Excursión a la ciudad", new Date(), 1, 50.0));
+        excs.add(new Excursion(4,"EXC4", "Excursión a la selva", new Date(), 4, 200.0));
+        excs.add(new Excursion(5,"EXC5", "Excursión a la nieve", new Date(), 5, 250.0));
+        excs.add(new Excursion(6,"EXC6", "Excursión a la granja", new Date(), 1, 50.0));
+        return excs;
     }
 
 }
