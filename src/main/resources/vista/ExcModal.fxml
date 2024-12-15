@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.ExcursionControlador">
+    <HBox>
+        <Label text="ID: " />
+        <Label fx:id="idExc" text="ID: " />
+    </HBox>
+    <HBox>
+        <Label text="Codi: " />
+        <Label fx:id="codiExc" text="Codi: " />
+    </HBox>
+    <HBox>
+        <Label text="Descripción: " />
+        <Label fx:id="nomExc" text="Nom: " />
+    </HBox>
+    <HBox>
+        <Label text="Data: " />
+        <Label fx:id="dataExc" text="Data: " />
+    </HBox>
+    <HBox>
+        <Label text="Preu: " />
+        <Label fx:id="preuExc" text="Preu: " />
+    </HBox>
+</VBox>

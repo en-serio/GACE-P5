@@ -6,13 +6,21 @@ import gace.modelo.dao.DAOFactory;
 import gace.modelo.dao.ExcursionDao;
 import gace.vista.DatosUtil;
 import gace.vista.VistaExcursion;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+import jdk.jfr.Percentage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,7 +33,20 @@ public class ExcursionControlador {
     private VistaExcursion vistaExcursion;
     private ExcursionDao excursionDao;
     @FXML
-    private AnchorPane listaExcursion;
+    private TableView<Excursion> tableView;
+    @FXML
+    private TableColumn<Excursion, Integer> columnId;
+    @FXML
+    private TableColumn<Excursion, String> columnCodigo;
+    @FXML
+    private TableColumn<Excursion, String> columnDescripcion;
+    @FXML
+    private TableColumn<Excursion, Date> columnFecha;
+    @FXML
+    private TableColumn<Excursion, Integer> columnCantidad;
+    @FXML
+    private TableColumn<Excursion, Double> columnPrecio;
+
 
     public ExcursionControlador() {
         this.vistaExcursion = new VistaExcursion();
@@ -33,29 +54,116 @@ public class ExcursionControlador {
         this.datosUtil = new DatosUtil();
     }
 
-    public boolean novaExcursio(){
-        String strExcursio = this.vistaExcursion.formExcursion();
-        String[] datosExc = strExcursio.split(",");
-        if (datosExc.length < 4) {
-            datosUtil.mostrarError("Datos de la excursión incompletos");
-            return false;
-        }
-        Date data = null;
-        try{
-            data = validarFecha(datosExc[2]);
-        } catch (ParseException e) {
-            datosUtil.mostrarError("Fecha no válida");
-            return false;
-        }
-        if(data == null){
-            datosUtil.mostrarError("Fecha no válida");
-            return false;
-        }
-        Excursion exc = new Excursion(datosExc[0], datosExc[1], data, Integer.parseInt(datosExc[3]), Double.parseDouble(datosExc[4]));
-        excursionDao.insertar(exc);
-        vistaExcursion.detalleExcursion(exc.toString());
-        return true;
+    public void novaExcursio() {
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Ingresar Excursión");
+
+        // Controles para los datos
+        Label descripcionLabel = new Label("Descripción:");
+        TextField descripcionField = new TextField();
+        descripcionField.setPromptText("Ingrese descripción");
+
+        Label fechaLabel = new Label("Fecha:");
+        DatePicker fechaPicker = new DatePicker();
+
+        Label diasLabel = new Label("Número de días:");
+        TextField diasField = new TextField();
+        diasField.setPromptText("Ingrese número de días");
+
+        Label precioLabel = new Label("Precio de inscripción:");
+        TextField precioField = new TextField();
+        precioField.setPromptText("Ingrese precio");
+
+        // Botones
+        Button aceptarButton = new Button("Aceptar");
+        Button cancelarButton = new Button("Cancelar");
+        aceptarButton.setOnAction(event -> {
+            String descripcion = descripcionField.getText();
+            String fecha = (fechaPicker.getValue() != null) ? fechaPicker.getValue().toString() : "";
+            String dias = diasField.getText();
+            String precio = precioField.getText();
+
+            // Validación básica
+            if (descripcion.isEmpty() || fecha.isEmpty() || dias.isEmpty() || precio.isEmpty()) {
+                mostrarAlerta("Por favor, complete todos los campos.");
+                return;
+            }
+
+            try {
+                int numeroDias = Integer.parseInt(dias);
+                double precioInscripcion = Double.parseDouble(precio);
+
+                // Mostrar datos ingresados (o procesarlos)
+                System.out.println("Descripción: " + descripcion);
+                System.out.println("Fecha: " + fecha);
+                System.out.println("Número de días: " + numeroDias);
+                System.out.println("Precio: " + precioInscripcion);
+
+                modalStage.close(); // Cerrar la modal
+            } catch (NumberFormatException e) {
+                mostrarAlerta("Número de días y precio deben ser valores numéricos.");
+            }
+        });
+        cancelarButton.setOnAction(event -> modalStage.close());
+
+        // Diseño de la ventana
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.add(descripcionLabel, 0, 0);
+        grid.add(descripcionField, 1, 0);
+
+        grid.add(fechaLabel, 0, 1);
+        grid.add(fechaPicker, 1, 1);
+
+        grid.add(diasLabel, 0, 2);
+        grid.add(diasField, 1, 2);
+
+        grid.add(precioLabel, 0, 3);
+        grid.add(precioField, 1, 3);
+
+        HBox buttonBox = new HBox(10, aceptarButton, cancelarButton);
+        buttonBox.setPadding(new Insets(10));
+        grid.add(buttonBox, 1, 4);
+
+        Scene scene = new Scene(grid, 400, 250);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
+
     }
+
+    private void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle("Advertencia");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+//        String strExcursio = this.vistaExcursion.formExcursion();
+//        String[] datosExc = strExcursio.split(",");
+//        if (datosExc.length < 4) {
+//            datosUtil.mostrarError("Datos de la excursión incompletos");
+//            return false;
+//        }
+//        Date data = null;
+//        try{
+//            data = validarFecha(datosExc[2]);
+//        } catch (ParseException e) {
+//            datosUtil.mostrarError("Fecha no válida");
+//            return false;
+//        }
+//        if(data == null){
+//            datosUtil.mostrarError("Fecha no válida");
+//            return false;
+//        }
+//        Excursion exc = new Excursion(datosExc[0], datosExc[1], data, Integer.parseInt(datosExc[3]), Double.parseDouble(datosExc[4]));
+//        excursionDao.insertar(exc);
+//        vistaExcursion.detalleExcursion(exc.toString());
+//        return true;
+//    }
 
     private Date validarFecha(String fechaString) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -63,14 +171,14 @@ public class ExcursionControlador {
         return dateFormat.parse(fechaString);
     }
 
-    public ArrayList<Excursion> mostrarExcursiones(){
-        ArrayList<Excursion> excursiones = DAOFactory.getExcursionDao().listar();
-        if(excursiones == null){
-            datosUtil.mostrarError("No hay excursiones para mostrar");
-            return null;
-        }
-        return excursiones;
-    }
+//    public ArrayList<Excursion> mostrarExcursiones(){
+//        ArrayList<Excursion> excursiones = DAOFactory.getExcursionDao().listar();
+//        if(excursiones == null){
+//            datosUtil.mostrarError("No hay excursiones para mostrar");
+//            return null;
+//        }
+//        return excursiones;
+//    }
     public Excursion pedirExcursion(){
         String codigo = vistaExcursion.pedirExc();
         Excursion exc = buscarExcursion(codigo);
@@ -147,35 +255,63 @@ public class ExcursionControlador {
         return false;
     }
 
-    public void menuExcursion(AnchorPane contenedorCentral, Scene scene){
-        //ArrayList<Excursion> excs = DAOFactory.getExcursionDao().listar();
-        ArrayList<Excursion> excs = falsalistaExc();
-        if(excs == null){
-            datosUtil.mostrarError("No hay excursiones para mostrar");
-            return;
-        }
-        try{
-            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuExcursion.fxml"));
-            Parent menuRoot = menuLoader.load();
+//    public void menuExcursion(AnchorPane contenedorCentral, Scene scene){
+//        //ArrayList<Excursion> excs = DAOFactory.getExcursionDao().listar();
+//        ArrayList<Excursion> excs = falsalistaExc();
+//        if(excs == null){
+//            datosUtil.mostrarError("No hay excursiones para mostrar");
+//            return;
+//        }
+//        try{
+//            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuExcursion.fxml"));
+//            Parent menuRoot = menuLoader.load();
+//
+//            contenedorCentral.getChildren().clear();
+//            contenedorCentral.getChildren().add(menuRoot);
+//
+//            listaExcursion = (AnchorPane) scene.lookup("#listaExcursion");
+//            for (Excursion exc : excs) {
+//                Label label = new Label("ID: " + exc.getId() + " Código: " + exc.getCodigo() + " " + exc.getDescripcion());
+//
+//                VBox socioBox = new VBox(5, label);
+//                socioBox.setStyle("-fx-border-color: gray; -fx-padding: 10; -fx-background-color: #f9f9f9;");
+//
+//                listaExcursion.getChildren().add(socioBox);
+//            }
+//        } catch (Exception e) {
+//            System.err.println(e.getMessage());
+//        }
+//    }
 
-            contenedorCentral.getChildren().clear();
-            contenedorCentral.getChildren().add(menuRoot);
+    public void mostrarDetalle(Excursion exc){
+        Label idExc = new Label("ID: " + exc.getId());
+        Label codiExc = new Label("Codi: " + exc.getCodigo());
+        Label nomExc = new Label("Descripción: " + exc.getDescripcion());
+        Label dataExc = new Label("Data: " + exc.getFecha().toString());
+        Label preuExc = new Label("Preu: " + exc.getPrecio());
 
-            listaExcursion = (AnchorPane) scene.lookup("#listaExcursion");
-            for (Excursion exc : excs) {
-                Label label = new Label("ID: " + exc.getId() + " Código: " + exc.getCodigo() + " " + exc.getDescripcion());
+        HBox hboxId = new HBox(idExc);
+        HBox hboxCodi = new HBox(codiExc);
+        HBox hboxNom = new HBox(nomExc);
+        HBox hboxData = new HBox(dataExc);
+        HBox hboxPreu = new HBox(preuExc);
 
-                VBox socioBox = new VBox(5, label);
-                socioBox.setStyle("-fx-border-color: gray; -fx-padding: 10; -fx-background-color: #f9f9f9;");
+        VBox vbox = new VBox(10, hboxId, hboxCodi, hboxNom, hboxData, hboxPreu);
+        vbox.setSpacing(10);
 
-                listaExcursion.getChildren().add(socioBox);
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+        Scene scene = new Scene(vbox, 300, 200);
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Detalles de la Excursión");
+        modalStage.setScene(scene);
+
+        modalStage.showAndWait();
     }
 
-    public ArrayList<Excursion> falsalistaExc(){
+
+
+
+    public void mostrarExcursiones(){
         ArrayList<Excursion> excs = new ArrayList<>();
         excs.add(new Excursion(1,"EXC1", "Excursión a la playa", new Date(), 2, 100.0));
         excs.add(new Excursion(2,"EXC2", "Excursión a la montaña", new Date(), 3, 150.0));
@@ -183,7 +319,36 @@ public class ExcursionControlador {
         excs.add(new Excursion(4,"EXC4", "Excursión a la selva", new Date(), 4, 200.0));
         excs.add(new Excursion(5,"EXC5", "Excursión a la nieve", new Date(), 5, 250.0));
         excs.add(new Excursion(6,"EXC6", "Excursión a la granja", new Date(), 1, 50.0));
-        return excs;
+
+        ObservableList<Excursion> datos = FXCollections.observableArrayList(excs);
+
+        // Establecer los datos en la ListView
+        columnId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+        columnDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        columnFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        columnCantidad.setCellValueFactory(new PropertyValueFactory<>("noDias"));
+        columnPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        columnPrecio.setCellFactory(column -> {
+            return new TableCell<Excursion, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(String.format("%.2f €", item));
+                    }
+                }
+            };
+        });
+
+        tableView.setItems(datos);
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                mostrarDetalle(newSelection);
+            }
+        });
     }
 
 }

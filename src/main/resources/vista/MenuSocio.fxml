@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.MenuSocioController">
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.SocioControlador">
     <VBox spacing="10" alignment="CENTER">
         <Label text="Gestión de Socios" style="-fx-font-size: 18px;" />
         <TableView fx:id="tablaSocios">
@@ -18,4 +18,4 @@
             <Button text="Eliminar" fx:id="btnEliminar" />
         </HBox>
     </VBox>
-</AnchorPane>
+</StackPane>

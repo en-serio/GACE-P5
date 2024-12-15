@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<StackPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="gace.controlador.InscripcionControlador"
             prefHeight="400.0" prefWidth="600.0">
@@ -14,9 +14,6 @@
     <VBox layoutX="32.0" layoutY="42.0" prefHeight="200.0" prefWidth="223.0">
         <children>
             <Button onAction="#novaInscripcio" text="Nova Inscripció" />
-            <Button onAction="#mostrarInscripcionesXExc" text="Mostrar Inscripcions" />
-            <Button onAction="#eliminarInscripcion" text="Eliminar Inscripcions" />
-            <Button onAction="#buscarInscripcion" text="Socios" />
         </children>
     </VBox>
-</AnchorPane>
+</StackPane>

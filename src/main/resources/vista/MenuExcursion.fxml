@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gace.controlador.ExcursionControlador"
-            prefHeight="400.0" prefWidth="600.0">
-    <HBox>
-        <Button onAction="#novaExcursio" text="Nova Excursio" />
-<!--        <Button onAction="#" text="filtrar" />-->
-    </HBox>
-    <VBox>
-        <AnchorPane fx:id="listaExcursion" style="-fx-background-color: #ffffff;"/>
+<StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.ExcursionControlador">
+    <VBox StackPane.alignment="CENTER" VBox.vgrow="ALWAYS">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gestor de excursiones" textAlignment="CENTER" >
+         <font>
+            <Font size="50.0" />
+         </font>
+      </Text>
+      <Region prefHeight="20.0" prefWidth="600.0" />
+        <HBox prefHeight="26.0" prefWidth="600.0">
+            <Button onAction="#novaExcursio" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
+
+            <Region prefHeight="26.0" HBox.hgrow="ALWAYS" />
+
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="61.0" text="Filtrar" />
+        </HBox>
+      <Region prefHeight="20.0" prefWidth="600.0" />
+
+        <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="columnId" text="ID" />
+                <TableColumn fx:id="columnCodigo" text="Código" />
+                <TableColumn fx:id="columnDescripcion" text="Descripción" />
+                <TableColumn fx:id="columnFecha" text="Fecha" />
+                <TableColumn fx:id="columnCantidad" text="Cantidad" />
+                <TableColumn fx:id="columnPrecio" text="Precio" />
+            </columns>
+        </TableView>
     </VBox>
-</AnchorPane>
+</StackPane>
