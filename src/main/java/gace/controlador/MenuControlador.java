@@ -1,6 +1,5 @@
 package gace.controlador;
 
-import gace.modelo.Excursion;
 import gace.modelo.utils.BBDDUtil;
 import gace.vista.DatosUtil;
 import gace.vista.PrimVista;
@@ -8,14 +7,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 
 public class MenuControlador {
     private DatosUtil datosUtil;
@@ -25,10 +20,7 @@ public class MenuControlador {
 
     @FXML
     private AnchorPane contenedorCentral;
-    @FXML
-    private AnchorPane listaExcursion;
-    @FXML
-    private Scene escena;
+
 
     public MenuControlador() {
         this.datosUtil = new DatosUtil();
@@ -73,12 +65,12 @@ public class MenuControlador {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/Escena.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-            this.escena = scene;
+
             primaryStage.setScene(scene);
             primaryStage.setTitle("GACE - Gestión de Actividades Culturales y Excursiones");
             primaryStage.show();
 
-            contenedorCentral = (AnchorPane) escena.lookup("#contenedorCentral");
+            this.contenedorCentral = (AnchorPane) scene.lookup("#contenedorCentral");
             FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuVista.fxml"));
             Parent menuRoot = menuLoader.load();
 
@@ -88,6 +80,27 @@ public class MenuControlador {
             System.err.println(e.getMessage());
         }
     }
+
+    // Cargar el menú de socios
+    public void cargarMenuSocio() {
+        try {
+            // Cargar la vista desde el archivo MenuSocio.fxml
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/MenuSocio.fxml"));
+            Parent menuSocioRoot = loader.load();
+
+            // Limpiar el contenedor central y añadir la nueva vista
+            contenedorCentral.getChildren().clear();
+            contenedorCentral.getChildren().add(menuSocioRoot);
+        } catch (Exception e) {
+            System.err.println("Error al cargar MenuSocio.fxml: " + e.getMessage());
+        }
+    }
+
+    //Vinculado al botón "Socios" en MenuVista.fxml
+    @FXML
+    public void menuSocio() {
+        cargarMenuSocio();
+    }
     public void initialize() {
         if (contenedorCentral != null) {
             System.out.println("contenedorCentral ha sido inicializado correctamente.");
@@ -96,7 +109,7 @@ public class MenuControlador {
         }
     }
 
-    public void salir(){
+    public void salir() {
         System.exit(0);
     }
 
@@ -169,6 +182,8 @@ public class MenuControlador {
         return true;
     }
 
+    public boolean menuExcursion() {
+        int opcion = datosUtil.menuExcursiones();
         switch (opcion) {
             case 1:
                 excursionControlador.novaExcursio();
@@ -197,6 +212,27 @@ public class MenuControlador {
 
     public boolean menuInscripcion() {
 
+    public boolean menuInscripcion() {
+        int opcion = datosUtil.menuInscripciones();
+        switch (opcion) {
+            case 1:
+                inscripcionControlador.novaInscripcio(1);
+                break;
+            case 2:
+                inscripcionControlador.mostrarInscripcionesXExc();
+                break;
+            case 3:
+                inscripcionControlador.eliminarInscripcion();
+                break;
+            case 4:
+                inscripcionControlador.buscarInscripcion();
+                break;
+            case 0:
+                return false;
+            default:
+                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
+                break;
+        }
         return true;
     }
 //        int opcion = datosUtil.menuInscripciones();
@@ -222,12 +258,9 @@ public class MenuControlador {
 //        return true;
 //    }
 
-
-
     public void cerrarTeclado() {
         datosUtil.cerrarTeclado();
     }
-
 
     public boolean pruebaConexion() {
         Connection conexion = null;
@@ -238,4 +271,3 @@ public class MenuControlador {
         return true;
     }
 }
-
