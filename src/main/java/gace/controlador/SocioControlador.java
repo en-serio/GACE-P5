@@ -6,13 +6,91 @@ import gace.modelo.dao.DAOFactory;
 import gace.vista.VistaSocios;
 import gace.vista.DatosUtil;
 
+import javafx.scene.control.*;
+import javafx.fxml.FXML;
 import java.util.ArrayList;
 import java.util.List;
-
+import javafx.event.ActionEvent;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
 
 public class SocioControlador {
     private VistaSocios vistaSocios;
     private DatosUtil datosUtil;
+
+    @FXML
+    private Button btnRegistrar;
+
+    @FXML
+    private Button btnModificar;
+
+    @FXML
+    private Button btnEliminar;
+    @FXML
+    private TableView<?> tablaSocios; // Aquí se representa la tabla de socios
+
+
+    @FXML
+    private void handleRegistrar(ActionEvent event) {
+        //System.out.println("¡Botón Registrar fue presionado!"); // Este mensaje debería aparecer cuando haces clic
+
+        // Crear los campos de entrada para el nombre, apellido y tipo de socio
+        TextField nombreField = new TextField();
+        TextField apellidoField = new TextField();
+        ComboBox<String> tipoSocioCombo = new ComboBox<>();
+        tipoSocioCombo.getItems().addAll("ESTÁNDAR", "FEDERADO", "INFANTIL");
+
+        // Crear el diálogo
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Registrar Socio");
+        dialog.setHeaderText("Por favor ingrese los datos del socio:");
+
+        // Crear los botones para aceptar o cancelar el registro
+        ButtonType buttonTypeOk = new ButtonType("Registrar", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
+
+        // Añadir los elementos (campos de texto y combo box) al panel del diálogo
+        VBox vbox = new VBox(10);
+        vbox.getChildren().addAll(new Label("Nombre:"), nombreField,
+                new Label("Apellido:"), apellidoField,
+                new Label("Tipo de Socio:"), tipoSocioCombo);
+        dialog.getDialogPane().setContent(vbox);
+
+        // Al hacer clic en "Registrar", se captura la información y se procesa
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == buttonTypeOk) {
+                String nombre = nombreField.getText();
+                String apellido = apellidoField.getText();
+                String tipoSocio = tipoSocioCombo.getValue();
+
+                // Validar que los campos no estén vacíos
+                if (nombre.isEmpty() || apellido.isEmpty() || tipoSocio == null) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
+                    alert.show();
+                    return null;
+                }
+                // Devolver la información formateada (como en tu código original)
+                return tipoSocio + "," + nombre + "," + apellido;
+            }
+            return null;
+        });
+
+        // Mostrar el diálogo y esperar la respuesta
+        dialog.showAndWait().ifPresent(result -> {
+            if (result != null) {
+                System.out.println("Socio registrado: " + result); // Aquí podrías procesarlo, guardarlo en una base de datos, etc.
+            }
+        });
+    }
+
+    public void initialize() {
+
+        //btnRegistrar.setOnAction(event -> nouSoci());
+        btnModificar.setOnAction(event -> modificarFederacion());
+        btnEliminar.setOnAction(event -> eliminarSocio());
+    }
+
 
     public SocioControlador(VistaSocios vistaSocios) {
         this.vistaSocios = vistaSocios;
