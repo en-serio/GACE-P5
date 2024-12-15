@@ -21,7 +21,6 @@ public class MenuControlador {
     @FXML
     private AnchorPane contenedorCentral;
 
-
     public MenuControlador() {
         this.datosUtil = new DatosUtil();
         this.socioControlador = new SocioControlador();
@@ -59,9 +58,8 @@ public class MenuControlador {
         ventana.show();
     }
 
-
     public void menu(Stage primaryStage) {
-        try{
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/Escena.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
@@ -81,76 +79,32 @@ public class MenuControlador {
         }
     }
 
-//    public boolean menu() {
-//        int opcion = datosUtil.mostrarMenu();
-//
-//        switch (opcion) {
-//            case 1:
-//                menuSocio();
-//                break;
-//            case 2:
-//                menuExcursion();
-//                break;
-//            case 3:
-//                menuInscripcion();
-//                break;
-//            case 4:
-//                if (pruebaConexion()) {
-//                    System.out.println("Conexión establecida.");
-//                } else {
-//                    System.out.println("Error al conectar.");
-//                }
-//                break;
-//            case 0:
-//                datosUtil.mostrarError("Saliendo del programa...");
-//                return false;
-//            default:
-//                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
-//                break;
-//        }
-//        return true;
-//    }
+    // Cargar el menú de socios
+    public void cargarMenuSocio() {
+        try {
+            // Cargar la vista desde el archivo MenuSocio.fxml
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/MenuSocio.fxml"));
+            Parent menuSocioRoot = loader.load();
 
+            // Limpiar el contenedor central y añadir la nueva vista
+            contenedorCentral.getChildren().clear();
+            contenedorCentral.getChildren().add(menuSocioRoot);
+        } catch (Exception e) {
+            System.err.println("Error al cargar MenuSocio.fxml: " + e.getMessage());
+        }
+    }
 
-    public void salir(){
+    //Vinculado al botón "Socios" en MenuVista.fxml
+    @FXML
+    public void menuSocio() {
+        cargarMenuSocio();
+    }
+
+    public void salir() {
         System.exit(0);
     }
 
-
-    public boolean menuSocio(){
-        int opcion = datosUtil.menuSocios();
-        switch (opcion) {
-            case 1:
-                socioControlador.nouSoci();
-                break;
-            case 2:
-                socioControlador.mostrarSocios(1, 0);
-                break;
-            case 3:
-                socioControlador.eliminarSocio();
-                break;
-            case 4:
-                socioControlador.pedirSocio();
-                break;
-            case 5:
-                socioControlador.modificarSeguro();
-                break;
-            case 6:
-                socioControlador.modificarFederacion();
-                break;
-            case 7:
-                inscripcionControlador.calcularCuota();
-                break;
-            case 0:
-                return false;
-            default:
-                datosUtil.mostrarError("Opción no válida. Inténtelo de nuevo.");
-                break;
-        }
-        return true;
-    }
-
-    public boolean menuExcursion(){
+    public boolean menuExcursion() {
         int opcion = datosUtil.menuExcursiones();
         switch (opcion) {
             case 1:
@@ -177,7 +131,7 @@ public class MenuControlador {
         return true;
     }
 
-    public boolean menuInscripcion(){
+    public boolean menuInscripcion() {
         int opcion = datosUtil.menuInscripciones();
         switch (opcion) {
             case 1:
@@ -201,12 +155,9 @@ public class MenuControlador {
         return true;
     }
 
-
-
     public void cerrarTeclado() {
         datosUtil.cerrarTeclado();
     }
-
 
     public boolean pruebaConexion() {
         Connection conexion = null;
@@ -217,4 +168,3 @@ public class MenuControlador {
         return true;
     }
 }
-
