@@ -9,11 +9,11 @@
             <columns>
                 <TableColumn text="ID" fx:id="columnaID" />
                 <TableColumn text="Nombre" fx:id="columnaNombre" />
-                <TableColumn text="Edad" fx:id="columnaEdad" />
+                <TableColumn text="Apellido" fx:id="columnaApellido" />
             </columns>
         </TableView>
         <HBox spacing="10" alignment="CENTER">
-            <Button text="Registrar" fx:id="btnRegistrar" />
+            <Button text="Registrar" fx:id="btnRegistrar" onAction="#handleRegistrar"/>
             <Button text="Modificar" fx:id="btnModificar" />
             <Button text="Eliminar" fx:id="btnEliminar" />
         </HBox>
