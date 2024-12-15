@@ -13,27 +13,51 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.collections.ObservableList;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.collections.FXCollections;
 
 public class SocioControlador {
     private VistaSocios vistaSocios;
     private DatosUtil datosUtil;
+    private int fakeID = 1;
+    @FXML
+    private TableView<Socio> tablaSocios;
 
     @FXML
-    private Button btnRegistrar;
+    private TableColumn<Socio, Integer> columnaID;
 
     @FXML
-    private Button btnModificar;
+    private TableColumn<Socio, String> columnaNombre;
 
     @FXML
-    private Button btnEliminar;
-    @FXML
-    private TableView<?> tablaSocios; // Aquí se representa la tabla de socios
+    private TableColumn<Socio, String> columnaApellido;
 
+    private ObservableList<Socio> listaSocios;
 
+    public void initialize() {
+        // Configurar las columnas para que apunten a los getters de la clase Socio
+        columnaID.setCellValueFactory(new PropertyValueFactory<>("idSocio"));
+        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+
+        // Cargar los socios falsos en la tabla
+        cargarTablaSocios();
+    }
+
+    private void cargarTablaSocios() {
+        // Crear una lista de socios falsos
+        listaSocios = FXCollections.observableArrayList(
+                new SocioEstandar(fakeID,"CARLES","JULIA","303030A", new Seguro(1, true,40)),
+                new SocioEstandar(fakeID= fakeID +1,"ALBERT","TEST","303030A", new Seguro(1, true,40)),
+                new SocioEstandar(fakeID= fakeID +1,"ENRIQUE","TEST","303030A", new Seguro(1, true,40))
+                );
+
+        // Vincular la lista de socios con la TableView
+        tablaSocios.setItems(listaSocios);
+    }
     @FXML
     private void handleRegistrar(ActionEvent event) {
-        //System.out.println("¡Botón Registrar fue presionado!"); // Este mensaje debería aparecer cuando haces clic
-
         // Crear los campos de entrada para el nombre, apellido y tipo de socio
         TextField nombreField = new TextField();
         TextField apellidoField = new TextField();
@@ -79,16 +103,74 @@ public class SocioControlador {
         // Mostrar el diálogo y esperar la respuesta
         dialog.showAndWait().ifPresent(result -> {
             if (result != null) {
-                System.out.println("Socio registrado: " + result); // Aquí podrías procesarlo, guardarlo en una base de datos, etc.
+                // Procesar los datos del nuevo socio
+                String[] datosSocio = result.split(",");
+                String tipoSocio = datosSocio[0];
+                String nombre = datosSocio[1];
+                String apellido = datosSocio[2];
+
+                // Crear el nuevo socio en función del tipo
+                Socio nuevoSocio = null;
+                switch (tipoSocio) {
+                    case "ESTÁNDAR":
+                        nuevoSocio = new SocioEstandar(fakeID= fakeID +1, nombre, apellido, "NIF123", new Seguro(1, true, 40));
+                        break;
+                    case "FEDERADO":
+                        nuevoSocio = new SocioFederado(nombre,apellido,"NIF456", new Federacion("020","0202"));
+                        break;
+                    case "INFANTIL":
+                        nuevoSocio = new SocioInfantil(fakeID= fakeID +1, nombre, apellido, 123);
+                        break;
+                }
+
+                if (nuevoSocio != null) {
+                    // Añadir el nuevo socio a la lista
+                    listaSocios.add(nuevoSocio);
+
+                    // Actualizar la TableView (esto se hace automáticamente con ObservableList)
+                    tablaSocios.setItems(listaSocios);
+                }
             }
         });
     }
+    @FXML
+    private void handleEliminar(ActionEvent event) {
+        // Crear un cuadro de entrada para que el usuario ingrese el ID del socio a eliminar
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Eliminar Socio");
+        dialog.setHeaderText("Por favor, ingrese el ID del socio a eliminar:");
+        dialog.setContentText("ID del Socio:");
 
-    public void initialize() {
+        // Mostrar el diálogo y obtener el ID ingresado por el usuario
+        dialog.showAndWait().ifPresent(idInput -> {
+            // Intentamos convertir el ID ingresado a un número
+            try {
+                int idSocio = Integer.parseInt(idInput);  // Convertir el ID ingresado a un entero
 
-        //btnRegistrar.setOnAction(event -> nouSoci());
-        btnModificar.setOnAction(event -> modificarFederacion());
-        btnEliminar.setOnAction(event -> eliminarSocio());
+                // Buscar el socio en la lista usando el ID
+                Socio socioAEliminar = null;
+                for (Socio socio : listaSocios) {
+                    if (socio.getIdSocio() == idSocio) {
+                        socioAEliminar = socio;
+                        break;
+                    }
+                }
+
+                // Si encontramos el socio con el ID, lo eliminamos
+                if (socioAEliminar != null) {
+                    listaSocios.remove(socioAEliminar);  // Eliminar de la lista
+                    tablaSocios.setItems(listaSocios);  // Actualizar la tabla
+                    datosUtil.mostrarError("Socio eliminado El socio con ID " + idSocio + " ha sido eliminado.");
+                } else {
+                    // Si no se encuentra el socio
+                    datosUtil.mostrarError("Socio no encontrado No se encontró un socio con el ID " + idSocio + ".");
+                }
+
+            } catch (NumberFormatException e) {
+                // Si el ID no es un número válido
+                datosUtil.mostrarError("ID no válido El ID ingresado no es válido.");
+            }
+        });
     }
 
 

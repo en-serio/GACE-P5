@@ -15,7 +15,7 @@
         <HBox spacing="10" alignment="CENTER">
             <Button text="Registrar" fx:id="btnRegistrar" onAction="#handleRegistrar"/>
             <Button text="Modificar" fx:id="btnModificar" />
-            <Button text="Eliminar" fx:id="btnEliminar" />
+            <Button text="Eliminar" fx:id="btnEliminar" onAction="#handleEliminar"/>
         </HBox>
     </VBox>
 </AnchorPane>
