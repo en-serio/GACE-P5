@@ -69,32 +69,32 @@ public class SocioControlador {
         dialog.setTitle("Registrar Socio");
         dialog.setHeaderText("Por favor ingrese los datos del socio:");
 
-        // Crear los botones para aceptar o cancelar el registro
+
         ButtonType buttonTypeOk = new ButtonType("Registrar", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
 
-        // Añadir los elementos (campos de texto y combo box) al panel del diálogo
+
         VBox vbox = new VBox(10);
         vbox.getChildren().addAll(new Label("Nombre:"), nombreField,
                 new Label("Apellido:"), apellidoField,
                 new Label("Tipo de Socio:"), tipoSocioCombo);
         dialog.getDialogPane().setContent(vbox);
 
-        // Al hacer clic en "Registrar", se captura la información y se procesa
+
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == buttonTypeOk) {
                 String nombre = nombreField.getText();
                 String apellido = apellidoField.getText();
                 String tipoSocio = tipoSocioCombo.getValue();
 
-                // Validar que los campos no estén vacíos
+
                 if (nombre.isEmpty() || apellido.isEmpty() || tipoSocio == null) {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
                     alert.show();
                     return null;
                 }
-                // Devolver la información formateada (como en tu código original)
+
                 return tipoSocio + "," + nombre + "," + apellido;
             }
             return null;
