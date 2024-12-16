@@ -24,6 +24,8 @@ import jdk.jfr.Percentage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +61,10 @@ public class ExcursionControlador {
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Ingresar Excursión");
 
+        Label codigoLabel = new Label("Código:");
+        TextField codigoField = new TextField();
+        codigoField.setPromptText("Ingrese el Código");
+
         Label descripcionLabel = new Label("Descripción:");
         TextField descripcionField = new TextField();
         descripcionField.setPromptText("Ingrese descripción");
@@ -77,12 +83,13 @@ public class ExcursionControlador {
         Button aceptarButton = new Button("Aceptar");
         Button cancelarButton = new Button("Cancelar");
         aceptarButton.setOnAction(event -> {
+            String codigo = codigoField.getText();
             String descripcion = descripcionField.getText();
-            String fecha = (fechaPicker.getValue() != null) ? fechaPicker.getValue().toString() : "";
+            LocalDate fecha = (fechaPicker.getValue() != null) ? fechaPicker.getValue() : null;
             String dias = diasField.getText();
             String precio = precioField.getText();
 
-            if (descripcion.isEmpty() || fecha.isEmpty() || dias.isEmpty() || precio.isEmpty()) {
+            if (descripcion.isEmpty() || fecha == null || dias.isEmpty() || precio.isEmpty()) {
                 mostrarAlerta("Por favor, complete todos los campos.");
                 return;
             }
@@ -90,10 +97,16 @@ public class ExcursionControlador {
             try {
                 int numeroDias = Integer.parseInt(dias);
                 double precioInscripcion = Double.parseDouble(precio);
-
+                Date fechaDate = validarFecha(fecha);
+                Excursion exc = new Excursion(codigo, descripcion, fechaDate, numeroDias, precioInscripcion);
+                excursionDao.insertar(exc);
+                vistaExcursion.detalleExcursion(exc.toString());
+                mostrarExcursiones();
                 modalStage.close(); 
             } catch (NumberFormatException e) {
                 mostrarAlerta("Número de días y precio deben ser valores numéricos.");
+            } catch (ParseException e) {
+                mostrarAlerta("Fecha no válida.");
             }
         });
         cancelarButton.setOnAction(event -> modalStage.close());
@@ -103,28 +116,28 @@ public class ExcursionControlador {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        grid.add(descripcionLabel, 0, 0);
-        grid.add(descripcionField, 1, 0);
+        grid.add(codigoLabel, 0, 0);
+        grid.add(codigoField, 1, 0);
 
-        grid.add(fechaLabel, 0, 1);
-        grid.add(fechaPicker, 1, 1);
+        grid.add(descripcionLabel, 0, 1);
+        grid.add(descripcionField, 1, 1);
 
-        grid.add(diasLabel, 0, 2);
-        grid.add(diasField, 1, 2);
+        grid.add(fechaLabel, 0, 2);
+        grid.add(fechaPicker, 1, 2);
 
-        grid.add(precioLabel, 0, 3);
-        grid.add(precioField, 1, 3);
+        grid.add(diasLabel, 0, 3);
+        grid.add(diasField, 1, 3);
+
+        grid.add(precioLabel, 0, 4);
+        grid.add(precioField, 1, 4);
 
         HBox buttonBox = new HBox(10, aceptarButton, cancelarButton);
         buttonBox.setPadding(new Insets(10));
-        grid.add(buttonBox, 1, 4);
+        grid.add(buttonBox, 1, 5);
 
         Scene scene = new Scene(grid, 400, 250);
         modalStage.setScene(scene);
         modalStage.showAndWait();
-
-
-
     }
 
     private void mostrarAlerta(String mensaje) {
@@ -134,6 +147,8 @@ public class ExcursionControlador {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
+
 //        String strExcursio = this.vistaExcursion.formExcursion();
 //        String[] datosExc = strExcursio.split(",");
 //        if (datosExc.length < 4) {
@@ -157,10 +172,12 @@ public class ExcursionControlador {
 //        return true;
 //    }
 
-    private Date validarFecha(String fechaString) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private Date validarFecha(LocalDate fecha) throws ParseException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaFormato = fecha.format(formatter);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         dateFormat.setLenient(false);
-        return dateFormat.parse(fechaString);
+        return dateFormat.parse(fechaFormato);
     }
 
 //    public ArrayList<Excursion> mostrarExcursiones(){
