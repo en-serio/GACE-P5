@@ -59,7 +59,6 @@ public class ExcursionControlador {
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Ingresar Excursión");
 
-        // Controles para los datos
         Label descripcionLabel = new Label("Descripción:");
         TextField descripcionField = new TextField();
         descripcionField.setPromptText("Ingrese descripción");
@@ -75,7 +74,6 @@ public class ExcursionControlador {
         TextField precioField = new TextField();
         precioField.setPromptText("Ingrese precio");
 
-        // Botones
         Button aceptarButton = new Button("Aceptar");
         Button cancelarButton = new Button("Cancelar");
         aceptarButton.setOnAction(event -> {
@@ -84,7 +82,6 @@ public class ExcursionControlador {
             String dias = diasField.getText();
             String precio = precioField.getText();
 
-            // Validación básica
             if (descripcion.isEmpty() || fecha.isEmpty() || dias.isEmpty() || precio.isEmpty()) {
                 mostrarAlerta("Por favor, complete todos los campos.");
                 return;
@@ -94,20 +91,13 @@ public class ExcursionControlador {
                 int numeroDias = Integer.parseInt(dias);
                 double precioInscripcion = Double.parseDouble(precio);
 
-                // Mostrar datos ingresados (o procesarlos)
-                System.out.println("Descripción: " + descripcion);
-                System.out.println("Fecha: " + fecha);
-                System.out.println("Número de días: " + numeroDias);
-                System.out.println("Precio: " + precioInscripcion);
-
-                modalStage.close(); // Cerrar la modal
+                modalStage.close(); 
             } catch (NumberFormatException e) {
                 mostrarAlerta("Número de días y precio deben ser valores numéricos.");
             }
         });
         cancelarButton.setOnAction(event -> modalStage.close());
 
-        // Diseño de la ventana
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
         grid.setHgap(10);
@@ -132,6 +122,8 @@ public class ExcursionControlador {
         Scene scene = new Scene(grid, 400, 250);
         modalStage.setScene(scene);
         modalStage.showAndWait();
+
+
 
     }
 
@@ -312,13 +304,11 @@ public class ExcursionControlador {
 
 
     public void mostrarExcursiones(){
-        ArrayList<Excursion> excs = new ArrayList<>();
-        excs.add(new Excursion(1,"EXC1", "Excursión a la playa", new Date(), 2, 100.0));
-        excs.add(new Excursion(2,"EXC2", "Excursión a la montaña", new Date(), 3, 150.0));
-        excs.add(new Excursion(3,"EXC3", "Excursión a la ciudad", new Date(), 1, 50.0));
-        excs.add(new Excursion(4,"EXC4", "Excursión a la selva", new Date(), 4, 200.0));
-        excs.add(new Excursion(5,"EXC5", "Excursión a la nieve", new Date(), 5, 250.0));
-        excs.add(new Excursion(6,"EXC6", "Excursión a la granja", new Date(), 1, 50.0));
+        ArrayList<Excursion> excs = DAOFactory.getExcursionDao().listar();
+        if(excs == null){
+            datosUtil.mostrarError("No hay excursiones para mostrar");
+            return;
+        }
 
         ObservableList<Excursion> datos = FXCollections.observableArrayList(excs);
 
@@ -329,6 +319,19 @@ public class ExcursionControlador {
         columnFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         columnCantidad.setCellValueFactory(new PropertyValueFactory<>("noDias"));
         columnPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        columnFecha.setCellFactory(column -> {
+            return new TableCell<Excursion, Date>() {
+                @Override
+                protected void updateItem(Date item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(new SimpleDateFormat("dd/MM/yyyy").format(item));
+                    }
+                }
+            };
+        });
         columnPrecio.setCellFactory(column -> {
             return new TableCell<Excursion, Double>() {
                 @Override
