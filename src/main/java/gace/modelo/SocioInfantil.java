@@ -48,4 +48,9 @@ public class SocioInfantil extends Socio {
     public double costeExcursion(double precio) {
         return precio; // Precio completo
     }
+
+    @Override
+    public String getTipoSocio() {
+        return "Infantil"; // Esto se mostrará en la columna "Tipo de Socio" del TableView
+    }
 }

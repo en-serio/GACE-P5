@@ -12,6 +12,11 @@ public class SocioFederado extends Socio {
     @JoinColumn(name = "id_federacion", referencedColumnName = "id_federacion")
     private Federacion federacion;
 
+    public SocioFederado(int idSocio, String nombre, String apellido, String nif, Federacion federacion) {
+        super(idSocio, nombre, apellido);
+        this.federacion = federacion;
+        this.nif = nif;
+    }
 
     public SocioFederado(String nombre, String apellido, String nif, Federacion federacion) {
         super(nombre, apellido);
@@ -57,5 +62,10 @@ public class SocioFederado extends Socio {
     @Override
     public double costeExcursion(double precio) {
         return precio * 0.90; // 10% de descuento
+    }
+
+    @Override
+    public String getTipoSocio() {
+        return "Federado"; // Esto se mostrará en la columna "Tipo de Socio" del TableView
     }
 }
