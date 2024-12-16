@@ -50,14 +50,9 @@ public class SocioControlador {
     }
 
     private void cargarTablaSocios() {
-        // Crear una lista de socios falsos
-        listaSocios = FXCollections.observableArrayList(
-                new SocioEstandar(fakeID,"CARLES","JULIA","303030A", new Seguro(1, true,40)),
-                new SocioEstandar(fakeID= fakeID +1,"ALBERT","TEST","303030A", new Seguro(1, true,40)),
-                new SocioEstandar(fakeID= fakeID +1,"ENRIQUE","TEST","303030A", new Seguro(1, true,40))
-                );
+        List<Socio> socios = DAOFactory.getSocioDao().listar();
+        listaSocios = FXCollections.observableArrayList(socios);
 
-        // Vincular la lista de socios con la TableView
         tablaSocios.setItems(listaSocios);
     }
 
@@ -112,26 +107,64 @@ public class SocioControlador {
         // Crear los campos de entrada para el nombre, apellido y tipo de socio
         TextField nombreField = new TextField();
         TextField apellidoField = new TextField();
+        TextField nifField = new TextField();
+        /* per estandar */
+        TextField precioField = new TextField();
+        ComboBox<String> tipoSeguro = new ComboBox<>();
+        tipoSeguro.getItems().addAll("COMPLETO", "ESTÁNDAR");
+        /* per federat */
+        TextField codigoField = new TextField();
+        TextField nombreFedField = new TextField();
+        /* per infantil */
+        TextField tutorField = new TextField();
         ComboBox<String> tipoSocioCombo = new ComboBox<>();
         tipoSocioCombo.getItems().addAll("ESTÁNDAR", "FEDERADO", "INFANTIL");
 
-        // Crear el diálogo
         Dialog<String> dialog = new Dialog<>();
+        dialog.setHeight(400);
+        dialog.setWidth(500);
         dialog.setTitle("Registrar Socio");
         dialog.setHeaderText("Por favor ingrese los datos del socio:");
-
 
         ButtonType buttonTypeOk = new ButtonType("Registrar", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
 
-
         VBox vbox = new VBox(10);
-        vbox.getChildren().addAll(new Label("Nombre:"), nombreField,
-                new Label("Apellido:"), apellidoField,
-                new Label("Tipo de Socio:"), tipoSocioCombo);
+        HBox hbox = new HBox(10);
+        hbox.getChildren().addAll(new Label("Nombre:"), nombreField, new Label("Apellido:"), apellidoField);
+        vbox.getChildren().addAll(hbox, new Label("Tipo de Socio:"), tipoSocioCombo);
         dialog.getDialogPane().setContent(vbox);
 
+        VBox infoExtra = new VBox(10);
+        VBox contenido = new VBox(10);
+        contenido.getChildren().add(vbox);
+        tipoSocioCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals(oldValue)){
+                return;
+            }
+            infoExtra.getChildren().clear();
+            switch (newValue){
+                case "ESTÁNDAR":
+                    HBox hboxInfo = new HBox(10);
+                    HBox hboxOption = new HBox(10);
+                    hboxInfo.getChildren().addAll(new Label("NIF:"), nifField, new Label("Precio:"), precioField);
+                    hboxOption.getChildren().addAll(new Label("Tipo de Seguro:"), tipoSeguro);
+                    infoExtra.getChildren().addAll(hboxInfo, hboxOption);
+                    break;
+                case "FEDERADO":
+                    infoExtra.getChildren().addAll(
+                            new Label("Código Fed:"), codigoField,
+                            new Label("Nombre Fed:"), nombreFedField);
+                    break;
+                case "INFANTIL":
+                    infoExtra.getChildren().addAll(
+                            new Label("Tutor:"), tutorField);
+                    break;
+            }
+            contenido.getChildren().add(infoExtra);
+        });
+        dialog.getDialogPane().setContent(contenido);
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == buttonTypeOk) {
@@ -145,44 +178,17 @@ public class SocioControlador {
                     alert.show();
                     return null;
                 }
+                /*
+                Aqui ha de fer un switch per a cada tipus de soci i agafar les dades que facin falta
+                per crear un nou soci utilitzant els DAOFactory.getSocioDao().insertar(soci);
+                */
 
-                return tipoSocio + "," + nombre + "," + apellido;
             }
             return null;
         });
 
         // Mostrar el diálogo y esperar la respuesta
-        dialog.showAndWait().ifPresent(result -> {
-            if (result != null) {
-                // Procesar los datos del nuevo socio
-                String[] datosSocio = result.split(",");
-                String tipoSocio = datosSocio[0];
-                String nombre = datosSocio[1];
-                String apellido = datosSocio[2];
-
-                // Crear el nuevo socio en función del tipo
-                Socio nuevoSocio = null;
-                switch (tipoSocio) {
-                    case "ESTÁNDAR":
-                        nuevoSocio = new SocioEstandar(fakeID= fakeID +1, nombre, apellido, "NIF123", new Seguro(1, true, 40));
-                        break;
-                    case "FEDERADO":
-                        nuevoSocio = new SocioFederado(fakeID= fakeID +1, nombre,apellido,"NIF456", new Federacion("020","0202"));
-                        break;
-                    case "INFANTIL":
-                        nuevoSocio = new SocioInfantil(fakeID= fakeID +1, nombre, apellido, 123);
-                        break;
-                }
-
-                if (nuevoSocio != null) {
-                    // Añadir el nuevo socio a la lista
-                    listaSocios.add(nuevoSocio);
-
-                    // Actualizar la TableView (esto se hace automáticamente con ObservableList)
-                    tablaSocios.setItems(listaSocios);
-                }
-            }
-        });
+        dialog.showAndWait();
     }
     @FXML
     private void handleEliminar(ActionEvent event) {

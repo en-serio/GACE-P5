@@ -5,19 +5,17 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.ExcursionControlador">
-   <AnchorPane prefHeight="200.0" prefWidth="200.0">
-      <children>
-         <Text fx:id="texto" layoutX="11.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-titulo" text="Senderos y Montañas" textAlignment="CENTER" wrappingWidth="578.6362915039062">
-            <font>
-               <Font size="50.0" />
-            </font>
-         </Text>
-         <Text layoutX="65.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis bibendum felis quis accumsan. Etiam sit amet quam viverra, venenatis sem vitae, ultrices turpis. Nulla facilisi. Cras lacus dui, consectetur a interdum sed, ornare ut mi. Donec vitae elit ut lacus hendrerit feugiat. Curabitur purus enim, finibus et egestas ut, bibendum nec leo. Phasellus feugiat est ut pharetra gravida. Quisque feugiat eu tortor eget condimentum. Suspendisse lacinia sapien ac tortor suscipit varius.Sed ac ante at ante consequat ultricies quis eu diam. Suspendisse auctor magna eu sapien accumsan ultricies. Vivamus a ex eu justo suscipit eleifend. Ut congue blandit dolor in viverra. Duis aliquam nisl libero." wrappingWidth="470.13677978515625">
-            <font>
-               <Font size="14.0" />
-            </font>
-         </Text>
-      </children>
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.ExcursionControlador">
+   <AnchorPane>
+      <Text fx:id="texto" layoutX="11.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-titulo" text="Senderos y Montañas" textAlignment="CENTER" wrappingWidth="578.6362915039062">
+         <font>
+            <Font size="50.0" />
+         </font>
+      </Text>
+      <Text layoutX="65.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis bibendum felis quis accumsan. Etiam sit amet quam viverra, venenatis sem vitae, ultrices turpis. Nulla facilisi. Cras lacus dui, consectetur a interdum sed, ornare ut mi. Donec vitae elit ut lacus hendrerit feugiat. Curabitur purus enim, finibus et egestas ut, bibendum nec leo. Phasellus feugiat est ut pharetra gravida. Quisque feugiat eu tortor eget condimentum. Suspendisse lacinia sapien ac tortor suscipit varius.Sed ac ante at ante consequat ultricies quis eu diam. Suspendisse auctor magna eu sapien accumsan ultricies. Vivamus a ex eu justo suscipit eleifend. Ut congue blandit dolor in viverra. Duis aliquam nisl libero." wrappingWidth="470.13677978515625">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
    </AnchorPane>
 </StackPane>

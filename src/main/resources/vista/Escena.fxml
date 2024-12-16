@@ -7,7 +7,7 @@
 
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gace.controlador.MenuControlador" prefHeight="600.0" prefWidth="800.0">
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gace.controlador.MenuControlador">
     <left>
         <VBox fx:id="menuVBox" spacing="10" styleClass="menu-left" style="-fx-padding: 10;">
             <Button fx:id="inicioButton" text="Inicio" onAction="#inicio" styleClass="menu-button"/>
