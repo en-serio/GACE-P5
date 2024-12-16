@@ -5,9 +5,12 @@ import gace.vista.DatosUtil;
 import gace.vista.PrimVista;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
@@ -69,11 +72,10 @@ public class MenuControlador {
             primaryStage.show();
 
             this.contenedorCentral = (AnchorPane) scene.lookup("#contenedorCentral");
-            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuVista.fxml"));
-            Parent menuRoot = menuLoader.load();
+
 
             contenedorCentral.getChildren().clear();
-            contenedorCentral.getChildren().add(menuRoot);
+
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -82,19 +84,33 @@ public class MenuControlador {
     // Cargar el menú de socios
     public void cargarMenuSocio() {
         try {
-            // Cargar la vista desde el archivo MenuSocio.fxml
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/MenuSocio.fxml"));
-            Parent menuSocioRoot = loader.load();
 
-            // Limpiar el contenedor central y añadir la nueva vista
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/MenuSocio.fxml"));
+            Parent root = loader.load();
+
             contenedorCentral.getChildren().clear();
-            contenedorCentral.getChildren().add(menuSocioRoot);
+
+            StackPane stackPane = new StackPane();
+            stackPane.getChildren().add(root);
+
+            StackPane.setAlignment(root, Pos.CENTER);
+
+            stackPane.setPadding(new Insets(20));
+
+            contenedorCentral.getChildren().add(stackPane);
+
+            AnchorPane.setTopAnchor(stackPane, 0.0);
+            AnchorPane.setBottomAnchor(stackPane, 0.0);
+            AnchorPane.setLeftAnchor(stackPane, 0.0);
+            AnchorPane.setRightAnchor(stackPane, 0.0);
+
         } catch (Exception e) {
             System.err.println("Error al cargar MenuSocio.fxml: " + e.getMessage());
         }
     }
 
-    //Vinculado al botón "Socios" en MenuVista.fxml
+
+
     @FXML
     public void menuSocio() {
         cargarMenuSocio();

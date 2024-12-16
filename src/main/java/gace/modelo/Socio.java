@@ -41,6 +41,7 @@ public abstract class Socio {
         return nombre;
     }
     public String getApellido() {return apellido; }
+    public abstract String getTipoSocio();
 
     //setters
     public void setIdSocio(int idSocio) {

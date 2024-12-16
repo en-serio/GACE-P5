@@ -62,4 +62,9 @@ public class SocioEstandar extends Socio {
     public double costeExcursion(double precio) {
         return precio;
     }
+
+    @Override
+    public String getTipoSocio() {
+        return "Estandar"; // Esto se mostrará en la columna "Tipo de Socio" del TableView
+    }
 }

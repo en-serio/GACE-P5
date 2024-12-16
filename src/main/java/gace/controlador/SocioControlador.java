@@ -33,6 +33,9 @@ public class SocioControlador {
     @FXML
     private TableColumn<Socio, String> columnaApellido;
 
+    @FXML
+    private TableColumn<Socio, String> columnaTipo;
+
     private ObservableList<Socio> listaSocios;
 
     public void initialize() {
@@ -40,6 +43,7 @@ public class SocioControlador {
         columnaID.setCellValueFactory(new PropertyValueFactory<>("idSocio"));
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        columnaTipo.setCellValueFactory(new PropertyValueFactory<>("tipoSocio"));
 
         // Cargar los socios falsos en la tabla
         cargarTablaSocios();
@@ -56,6 +60,53 @@ public class SocioControlador {
         // Vincular la lista de socios con la TableView
         tablaSocios.setItems(listaSocios);
     }
+
+    @FXML
+    private void handleBuscar(ActionEvent event) {
+        // Crear un cuadro de entrada para que el usuario ingrese el ID del socio a buscar
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Buscar Socio");
+        dialog.setHeaderText("Por favor, ingrese el ID del socio a buscar:");
+        dialog.setContentText("ID del Socio:");
+
+        // Mostrar el diálogo y obtener el ID ingresado por el usuario
+        dialog.showAndWait().ifPresent(idInput -> {
+            try {
+                // Convertir el ID ingresado a un número
+                int idSocio = Integer.parseInt(idInput);
+
+                // Buscar el socio en la lista usando el ID
+                Socio socioEncontrado = listaSocios.stream()
+                        .filter(socio -> socio.getIdSocio() == idSocio)
+                        .findFirst()
+                        .orElse(null);
+
+                // Mostrar los detalles del socio si se encuentra
+                if (socioEncontrado != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Socio Encontrado");
+                    alert.setHeaderText("Detalles del Socio:");
+                    alert.setContentText(
+                            "ID: " + socioEncontrado.getIdSocio() + "\n" +
+                                    "Nombre: " + socioEncontrado.getNombre() + "\n" +
+                                    "Apellido: " + socioEncontrado.getApellido() + "\n" +
+                                    "Tipo: " + getTipoSocio(socioEncontrado)
+                    );
+                    alert.showAndWait();
+                } else {
+                    // Si no se encuentra el socio
+                    datosUtil.mostrarError("Socio no encontrado No se encontró un socio con el ID " + idSocio + ".");
+                }
+
+            } catch (NumberFormatException e) {
+                // Si el ID no es un número válido
+                datosUtil.mostrarError("ID no válido El ID ingresado no es válido.");
+            }
+        });
+    }
+
+
+
     @FXML
     private void handleRegistrar(ActionEvent event) {
         // Crear los campos de entrada para el nombre, apellido y tipo de socio
@@ -116,7 +167,7 @@ public class SocioControlador {
                         nuevoSocio = new SocioEstandar(fakeID= fakeID +1, nombre, apellido, "NIF123", new Seguro(1, true, 40));
                         break;
                     case "FEDERADO":
-                        nuevoSocio = new SocioFederado(nombre,apellido,"NIF456", new Federacion("020","0202"));
+                        nuevoSocio = new SocioFederado(fakeID= fakeID +1, nombre,apellido,"NIF456", new Federacion("020","0202"));
                         break;
                     case "INFANTIL":
                         nuevoSocio = new SocioInfantil(fakeID= fakeID +1, nombre, apellido, 123);
@@ -172,6 +223,124 @@ public class SocioControlador {
             }
         });
     }
+
+    @FXML
+    private void handleModificar(ActionEvent event) {
+        // Crear un cuadro de entrada para que el usuario ingrese el ID del socio a modificar
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Modificar Socio");
+        dialog.setHeaderText("Por favor, ingrese el ID del socio a modificar:");
+        dialog.setContentText("ID del Socio:");
+
+        // Mostrar el diálogo y obtener el ID ingresado por el usuario
+        dialog.showAndWait().ifPresent(idInput -> {
+            try {
+                // Convertir el ID ingresado a un número
+                int idSocio = Integer.parseInt(idInput);
+
+                // Buscar el socio en la lista
+                Socio socioAModificar = listaSocios.stream().filter(socio -> socio.getIdSocio() == idSocio).findFirst().orElse(null);
+
+                // Si el socio se encuentra
+                if (socioAModificar != null) {
+                    // Crear los campos de entrada con los datos actuales del socio
+                    TextField nombreField = new TextField(socioAModificar.getNombre());
+                    TextField apellidoField = new TextField(socioAModificar.getApellido());
+                    ComboBox<String> tipoSocioCombo = new ComboBox<>();
+                    tipoSocioCombo.getItems().addAll("ESTÁNDAR", "FEDERADO", "INFANTIL");
+                    tipoSocioCombo.setValue(getTipoSocio(socioAModificar));
+
+                    // Crear el diálogo
+                    Dialog<String> modificarDialog = new Dialog<>();
+                    modificarDialog.setTitle("Modificar Socio");
+                    modificarDialog.setHeaderText("Modifique los datos del socio:");
+
+                    ButtonType buttonTypeOk = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
+                    ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+                    modificarDialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
+
+                    VBox vbox = new VBox(10);
+                    vbox.getChildren().addAll(new Label("Nombre:"), nombreField,
+                            new Label("Apellido:"), apellidoField,
+                            new Label("Tipo de Socio:"), tipoSocioCombo);
+                    modificarDialog.getDialogPane().setContent(vbox);
+
+                    // Configurar la lógica para guardar los cambios
+                    modificarDialog.setResultConverter(dialogButton -> {
+                        if (dialogButton == buttonTypeOk) {
+                            String nuevoNombre = nombreField.getText();
+                            String nuevoApellido = apellidoField.getText();
+                            String nuevoTipoSocio = tipoSocioCombo.getValue();
+
+                            if (nuevoNombre.isEmpty() || nuevoApellido.isEmpty() || nuevoTipoSocio == null) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
+                                alert.show();
+                                return null;
+                            }
+
+                            return nuevoTipoSocio + "," + nuevoNombre + "," + nuevoApellido;
+                        }
+                        return null;
+                    });
+
+                    // Mostrar el diálogo y aplicar los cambios
+                    modificarDialog.showAndWait().ifPresent(result -> {
+                        if (result != null) {
+                            String[] datosModificados = result.split(",");
+                            String nuevoTipoSocio = datosModificados[0];
+                            String nuevoNombre = datosModificados[1];
+                            String nuevoApellido = datosModificados[2];
+
+                            // Actualizar el socio existente con los nuevos datos
+                            socioAModificar.setNombre(nuevoNombre);
+                            socioAModificar.setApellido(nuevoApellido);
+
+                            // Si el tipo de socio cambia, convertirlo al nuevo tipo
+                            if (!getTipoSocio(socioAModificar).equals(nuevoTipoSocio)) {
+                                Socio socioNuevo = null;
+                                switch (nuevoTipoSocio) {
+                                    case "ESTÁNDAR":
+                                        socioNuevo = new SocioEstandar(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF123", new Seguro(1, true, 40));
+                                        break;
+                                    case "FEDERADO":
+                                        socioNuevo = new SocioFederado(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF456", new Federacion("020", "0202"));
+                                        break;
+                                    case "INFANTIL":
+                                        socioNuevo = new SocioInfantil(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, 123);
+                                        break;
+                                }
+
+                                // Reemplazar en la lista
+                                listaSocios.set(listaSocios.indexOf(socioAModificar), socioNuevo);
+                            }
+
+                            // Actualizar la tabla
+                            tablaSocios.setItems(listaSocios);
+                            tablaSocios.refresh();  // Forzar actualización de la tabla
+                        }
+                    });
+
+                } else {
+                    datosUtil.mostrarError("Socio no encontrado No se encontró un socio con el ID " + idSocio + ".");
+                }
+            } catch (NumberFormatException e) {
+                datosUtil.mostrarError("ID no válido El ID ingresado no es válido.");
+            }
+        });
+    }
+
+    // Método auxiliar para determinar el tipo de socio como String
+    private String getTipoSocio(Socio socio) {
+        if (socio instanceof SocioEstandar) {
+            return "ESTÁNDAR";
+        } else if (socio instanceof SocioFederado) {
+            return "FEDERADO";
+        } else if (socio instanceof SocioInfantil) {
+            return "INFANTIL";
+        }
+        return "";
+    }
+
 
 
     public SocioControlador(VistaSocios vistaSocios) {
