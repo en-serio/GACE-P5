@@ -6,14 +6,14 @@
 
 <StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.ExcursionControlador">
     <VBox StackPane.alignment="CENTER" VBox.vgrow="ALWAYS">
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gestor de excursiones" textAlignment="CENTER" >
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gestor de excursiones" textAlignment="CENTER">
          <font>
             <Font size="50.0" />
          </font>
       </Text>
       <Region prefHeight="20.0" prefWidth="600.0" />
         <HBox prefHeight="26.0" prefWidth="600.0">
-            <Button onAction="#novaExcursio" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
+            <Button onAction="#novaExc" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
 
             <Region prefHeight="26.0" HBox.hgrow="ALWAYS" />
 
@@ -25,10 +25,10 @@
             <columns>
                 <TableColumn fx:id="columnId" text="ID" />
                 <TableColumn fx:id="columnCodigo" text="Código" />
-                <TableColumn fx:id="columnDescripcion" text="Descripción" />
-                <TableColumn fx:id="columnFecha" text="Fecha" />
-                <TableColumn fx:id="columnCantidad" text="Cantidad" />
-                <TableColumn fx:id="columnPrecio" text="Precio" />
+                <TableColumn fx:id="columnDescripcion" prefWidth="245.20001220703125" text="Descripción" />
+                <TableColumn fx:id="columnFecha" prefWidth="39.5999755859375" text="Fecha" />
+                <TableColumn fx:id="columnCantidad" prefWidth="78.60003662109375" text="Cantidad" />
+                <TableColumn fx:id="columnPrecio" prefWidth="78.5999755859375" text="Precio" />
             </columns>
         </TableView>
     </VBox>

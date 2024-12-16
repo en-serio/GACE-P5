@@ -56,7 +56,12 @@ public class ExcursionControlador {
         this.datosUtil = new DatosUtil();
     }
 
-    public void novaExcursio() {
+
+    public void novaExc(){
+        novaExcursio(null);
+    }
+
+    public void novaExcursio(Excursion excMod) {
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Ingresar Excursión");
@@ -80,6 +85,40 @@ public class ExcursionControlador {
         TextField precioField = new TextField();
         precioField.setPromptText("Ingrese precio");
 
+        if(excMod != null){
+            codigoField.setText(excMod.getCodigo());
+            descripcionField.setText(excMod.getDescripcion());
+            diasField.setText(String.valueOf(excMod.getNoDias()));
+            fechaPicker.setValue(excMod.getFecha().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
+            precioField.setText(String.valueOf(excMod.getPrecio()));
+        }
+
+        Button modificarButton = new Button("Modificar");
+        modificarButton.setOnAction(event -> {
+            String codigo = codigoField.getText();
+            String descripcion = descripcionField.getText();
+            LocalDate fecha = (fechaPicker.getValue() != null) ? fechaPicker.getValue() : null;
+            String dias = diasField.getText();
+            String precio = precioField.getText();
+
+            if (descripcion.isEmpty() || fecha == null || dias.isEmpty() || precio.isEmpty()) {
+                mostrarAlerta("Por favor, complete todos los campos.");
+                return;
+            }
+            try {
+                int numeroDias = Integer.parseInt(dias);
+                double precioInscripcion = Double.parseDouble(precio);
+                Date fechaDate = validarFecha(fecha);
+                modificarExc(excMod, codigo, descripcion, fechaDate, numeroDias, precioInscripcion);
+                vistaExcursion.detalleExcursion(excMod.toString());
+                mostrarExcursiones();
+                modalStage.close();
+            } catch (NumberFormatException e) {
+                mostrarAlerta("Número de días y precio deben ser valores numéricos.");
+            } catch (ParseException e) {
+                mostrarAlerta("Fecha no válida.");
+            }
+        });
         Button aceptarButton = new Button("Aceptar");
         Button cancelarButton = new Button("Cancelar");
         aceptarButton.setOnAction(event -> {
@@ -131,7 +170,12 @@ public class ExcursionControlador {
         grid.add(precioLabel, 0, 4);
         grid.add(precioField, 1, 4);
 
-        HBox buttonBox = new HBox(10, aceptarButton, cancelarButton);
+        HBox buttonBox = null;
+        if(excMod != null){
+            buttonBox = new HBox(10, modificarButton, cancelarButton);
+        } else {
+            buttonBox = new HBox(10, aceptarButton, cancelarButton);
+        }
         buttonBox.setPadding(new Insets(10));
         grid.add(buttonBox, 1, 5);
 
@@ -139,6 +183,16 @@ public class ExcursionControlador {
         modalStage.setScene(scene);
         modalStage.showAndWait();
     }
+
+    public void modificarExc(Excursion exc, String codigo, String descripcion, Date fecha, int noDias, Double precio){
+        exc.setCodigo(codigo);
+        exc.setDescripcion(descripcion);
+        exc.setFecha(fecha);
+        exc.setNoDias(noDias);
+        exc.setPrecio(precio);
+        DAOFactory.getExcursionDao().modificar(exc);
+    }
+
 
     private void mostrarAlerta(String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.WARNING);
@@ -180,14 +234,6 @@ public class ExcursionControlador {
         return dateFormat.parse(fechaFormato);
     }
 
-//    public ArrayList<Excursion> mostrarExcursiones(){
-//        ArrayList<Excursion> excursiones = DAOFactory.getExcursionDao().listar();
-//        if(excursiones == null){
-//            datosUtil.mostrarError("No hay excursiones para mostrar");
-//            return null;
-//        }
-//        return excursiones;
-//    }
     public Excursion pedirExcursion(){
         String codigo = vistaExcursion.pedirExc();
         Excursion exc = buscarExcursion(codigo);
@@ -206,118 +252,116 @@ public class ExcursionControlador {
         return DAOFactory.getExcursionDao().buscar(codigo);
     }
 
-      public boolean eliminarExcursion(){
-        ArrayList<Excursion> excursiones = DAOFactory.getExcursionDao().listar();
-        if(excursiones== null){
-            datosUtil.mostrarError("No hay excursiones para eliminar");
-            return false;
-        }
-        for(Excursion excursion : excursiones){
-            vistaExcursion.detalleExcursion(excursion.toString());
-        }
-        if(seleccionarExc(excursiones)){
-            return true;
-        }
-        return false;
-    }
-
-    public boolean seleccionarExc(ArrayList<Excursion> excursiones){
-        String codigo = vistaExcursion.pedirExc();
-        for(Excursion excur : excursiones){
-            if(excur.getCodigo().equals(codigo)) {
-                List<Inscripcion> insc = DAOFactory.getInscripcionDao().listarXExc(excur);
-                if(insc != null){
-                    datosUtil.mostrarError("No se puede eliminar la excursión porque tiene inscripciones");
-                    return false;
-                }
-                int opcion = datosUtil.pedirOpcion("Es esta la excursion que desea eliminar", "Sí", "No");
-                if (opcion == 1) {
-                    DAOFactory.getExcursionDao().eliminar(excur.getId());
-                    return true;
-                }
-                return false;
-            }
-        }
-        datosUtil.mostrarError("Excursion no encontrada");
-        return false;
-    }
-
-    public boolean cancelarExcursion(){
-        ArrayList<Excursion> excursiones = DAOFactory.getExcursionDao().listar();
-        if(excursiones == null){
-            datosUtil.mostrarError("No hay excursiones para cancelar");
-            return false;
-        }
-        for(Excursion excursion : excursiones){
-            vistaExcursion.detalleExcursion(excursion.toString());
-        }
-        Excursion exc = pedirExcursion();
-        if(exc == null){
-            return false;
-        }
-        int opcion = datosUtil.pedirOpcion("¿Está seguro de que desea cancelar la excursión?", "Sí", "No");
-        int cantidad = 0;
-        if(opcion == 1){
-            cantidad = DAOFactory.getExcursionDao().cancelar(exc);
-            datosUtil.mostrarInfo("Se han cancelado "+cantidad+" inscripciones");
-        }
-        return false;
-    }
-
-//    public void menuExcursion(AnchorPane contenedorCentral, Scene scene){
-//        //ArrayList<Excursion> excs = DAOFactory.getExcursionDao().listar();
-//        ArrayList<Excursion> excs = falsalistaExc();
-//        if(excs == null){
-//            datosUtil.mostrarError("No hay excursiones para mostrar");
-//            return;
+//    public boolean eliminarExcursion(){
+//        ArrayList<Excursion> excursiones = DAOFactory.getExcursionDao().listar();
+//        if(excursiones== null){
+//            datosUtil.mostrarError("No hay excursiones para eliminar");
+//            return false;
 //        }
-//        try{
-//            FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/vista/MenuExcursion.fxml"));
-//            Parent menuRoot = menuLoader.load();
-//
-//            contenedorCentral.getChildren().clear();
-//            contenedorCentral.getChildren().add(menuRoot);
-//
-//            listaExcursion = (AnchorPane) scene.lookup("#listaExcursion");
-//            for (Excursion exc : excs) {
-//                Label label = new Label("ID: " + exc.getId() + " Código: " + exc.getCodigo() + " " + exc.getDescripcion());
-//
-//                VBox socioBox = new VBox(5, label);
-//                socioBox.setStyle("-fx-border-color: gray; -fx-padding: 10; -fx-background-color: #f9f9f9;");
-//
-//                listaExcursion.getChildren().add(socioBox);
-//            }
-//        } catch (Exception e) {
-//            System.err.println(e.getMessage());
+//        for(Excursion excursion : excursiones){
+//            vistaExcursion.detalleExcursion(excursion.toString());
 //        }
+//        if(seleccionarExc(excursiones)){
+//            return true;
+//        }
+//        return false;
 //    }
 
-    public void mostrarDetalle(Excursion exc){
-        Label idExc = new Label("ID: " + exc.getId());
-        Label codiExc = new Label("Codi: " + exc.getCodigo());
-        Label nomExc = new Label("Descripción: " + exc.getDescripcion());
-        Label dataExc = new Label("Data: " + exc.getFecha().toString());
-        Label preuExc = new Label("Preu: " + exc.getPrecio());
+//    public boolean seleccionarExc(ArrayList<Excursion> excursiones){
+//        String codigo = vistaExcursion.pedirExc();
+//        for(Excursion excur : excursiones){
+//            if(excur.getCodigo().equals(codigo)) {
+//                List<Inscripcion> insc = DAOFactory.getInscripcionDao().listarXExc(excur);
+//                if(insc != null){
+//                    datosUtil.mostrarError("No se puede eliminar la excursión porque tiene inscripciones");
+//                    return false;
+//                }
+//                int opcion = datosUtil.pedirOpcion("Es esta la excursion que desea eliminar", "Sí", "No");
+//                if (opcion == 1) {
+//                    DAOFactory.getExcursionDao().eliminar(excur.getId());
+//                    return true;
+//                }
+//                return false;
+//            }
+//        }
+//        datosUtil.mostrarError("Excursion no encontrada");
+//        return false;
+//    }
 
-        HBox hboxId = new HBox(idExc);
-        HBox hboxCodi = new HBox(codiExc);
-        HBox hboxNom = new HBox(nomExc);
-        HBox hboxData = new HBox(dataExc);
-        HBox hboxPreu = new HBox(preuExc);
+    public void cancelarExcursion(Excursion exc){
+        if(exc == null){
+            datosUtil.mostrarError("No hay excursiones para cancelar");
+            return;
+        }
 
-        VBox vbox = new VBox(10, hboxId, hboxCodi, hboxNom, hboxData, hboxPreu);
-        vbox.setSpacing(10);
+        //int opcion = datosUtil.pedirOpcion("¿Está seguro de que desea cancelar la excursión?", "Sí", "No");
 
-        Scene scene = new Scene(vbox, 300, 200);
-        Stage modalStage = new Stage();
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-        modalStage.setTitle("Detalles de la Excursión");
-        modalStage.setScene(scene);
-
-        modalStage.showAndWait();
+        int cantidad = DAOFactory.getExcursionDao().cancelar(exc);
+        datosUtil.mostrarInfo("Se han cancelado "+cantidad+" inscripciones");
     }
 
+    public void mostrarDetalle(Excursion exc){
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Detalles Excursión" + exc.getCodigo());
+        Label idExc = new Label("ID: " );
+        Label idText = new Label(String.valueOf(exc.getId()));
 
+        Label codiExc = new Label("Codi: ");
+        Label codiText = new Label(exc.getCodigo());
+
+        Label nomExc = new Label("Descripción: ");
+        Label nomText = new Label(exc.getDescripcion());
+
+        Label dataExc = new Label("Data: " );
+        Label dataText = new Label(new SimpleDateFormat("dd/MM/yyyy").format(exc.getFecha()));
+
+        Label preuExc = new Label("Preu: ");
+        Label preuText = new Label(String.valueOf(exc.getPrecio()));
+
+        Button aceptarButton = new Button("Cancelar Excursio");
+        aceptarButton.setOnAction(event -> {
+            cancelarExcursion(exc);
+            mostrarExcursiones();
+            modalStage.close();
+
+        });
+        Button modificarExcursio = new Button("Modificar Excursio");
+        modificarExcursio.setOnAction(event -> {
+            novaExcursio(exc);
+            mostrarExcursiones();
+            modalStage.close();
+        });
+
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.add(idExc, 0, 0);
+        grid.add(idText, 1, 0);
+
+        grid.add(codiExc, 0, 1);
+        grid.add(codiText, 1, 1);
+
+        grid.add(nomExc, 0, 2);
+        grid.add(nomText, 1, 2);
+
+        grid.add(dataExc, 0, 3);
+        grid.add(dataText, 1, 3);
+
+        grid.add(preuExc, 0, 4);
+        grid.add(preuText, 1, 4);
+
+        HBox buttonBox = new HBox(10, aceptarButton, modificarExcursio);
+        buttonBox.setPadding(new Insets(10));
+        grid.add(buttonBox, 1, 5);
+
+        Scene scene = new Scene(grid, 400, 250);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
+    }
 
 
     public void mostrarExcursiones(){
