@@ -2,6 +2,7 @@ package gace.controlador;
 
 import gace.modelo.Excursion;
 import gace.modelo.Inscripcion;
+import gace.modelo.Socio;
 import gace.modelo.dao.DAOFactory;
 import gace.modelo.dao.ExcursionDao;
 import gace.vista.DatosUtil;
@@ -324,16 +325,20 @@ public class ExcursionControlador {
 
         Label preuExc = new Label("Preu: " + exc.getPrecio());
 
-        Button aceptarButton = new Button("Cancelar Excursio");
-        aceptarButton.setOnAction(event -> {
+        Button cancelarExcursio = new Button("Cancelar Excursio");
+        cancelarExcursio.setOnAction(event -> {
             cancelarExcursion(exc);
             mostrarExcursiones();
             modalStage.close();
 
         });
 
-        Button nuevaInscripcion = new Button("Nueva Excursio");
         Button crearInscripcion = new Button("Crear Inscripción");
+        crearInscripcion.setOnAction(event -> {
+            crearInscripcion(exc);
+            modalStage.close();
+        });
+
         Button modificarExcursio = new Button("Modificar Excursio");
         modificarExcursio.setOnAction(event -> {
             novaExcursio(exc);
@@ -364,8 +369,14 @@ public class ExcursionControlador {
         nomExc.setAlignment(CENTER);
 
         grid.add(nomExc, 0, 1, 3, 2);
+        Label gentLabel = null;
+        List<Inscripcion> insc = DAOFactory.getInscripcionDao().listarXExc(exc);
+        if(insc == null){
+            gentLabel = new Label("Gent Inscrita: 0");
+        }else{
+            gentLabel = new Label("Gent Inscrita: " + insc.size());
+        }
 
-        Label gentLabel = new Label("GENT INSCRITA");
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -375,13 +386,13 @@ public class ExcursionControlador {
 
         grid.add(hbox, 0, 3, 3, 1);
 
-        nuevaInscripcion.setMaxWidth(Double.MAX_VALUE);
+        cancelarExcursio.setMaxWidth(Double.MAX_VALUE);
         crearInscripcion.setMaxWidth(Double.MAX_VALUE);
         modificarExcursio.setMaxWidth(Double.MAX_VALUE);
 
-        HBox buttonsBox = new HBox(10, nuevaInscripcion, crearInscripcion, modificarExcursio);
+        HBox buttonsBox = new HBox(10, crearInscripcion, modificarExcursio, cancelarExcursio);
         buttonsBox.setAlignment(CENTER);
-        HBox.setHgrow(nuevaInscripcion, Priority.ALWAYS);
+        HBox.setHgrow(cancelarExcursio, Priority.ALWAYS);
         HBox.setHgrow(crearInscripcion, Priority.ALWAYS);
         HBox.setHgrow(modificarExcursio, Priority.ALWAYS);
 
@@ -402,6 +413,22 @@ public class ExcursionControlador {
             label.setAlignment(CENTER);
             //Pos.CENTER
         }
+    }
+
+    public void crearInscripcion(Excursion exc){
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Crear Inscripción");
+
+        Button aceptarButton = new Button("Aceptar");
+        Button cancelarButton = new Button("Cancelar");
+        aceptarButton.setOnAction(event -> {
+
+        });
+        cancelarButton.setOnAction(event -> modalStage.close());
+        List<Socio> socios = DAOFactory.getSocioDao().listar();
+        //Esta modal esta dentro de una modal, crea aqui un seleccionador de los registros del list de arriba
+
     }
 
 
