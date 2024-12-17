@@ -5,7 +5,17 @@ import gace.modelo.dao.DAOFactory;
 import gace.modelo.dao.InscripcionDao;
 import gace.vista.DatosUtil;
 import gace.vista.VistaInscripciones;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -75,28 +85,47 @@ public class InscripcionControlador {
     public int solicitarAyudaVisual() {
         return vistaInscripciones.vistaAyuda();
     }
+    private void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle("Advertencia");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
 
-    public boolean novaInscripcio() {
+    }
+
+    public void modificarInscripcion(Inscripcion ins, String codigo, Date fecha, Excursion idExc, Socio idSocio){
+            ins.setCodigo(codigo);
+            ins.setFechaInscripcion(fecha);
+            ins.setExcursion(idExc);
+            ins.setSocio(idSocio);
+            DAOFactory.getInscripcionDao().modificar(ins);
+    }
+    public void novaIns(){
+        nuevaInscripcion(null);
+    }
+    public void nuevaInscripcion(Inscripcion inscripcion) {
+
 //        if (1 == 1) {
 //            if(!excursionControlador.mostrarExcursiones()){
 //                return false;
 //            }
 //        }
-        int idExcursion = vistaInscripciones.pedirExcursionInsc();
-        if (idExcursion == -1) {
-            return false;
-        }
-        Excursion exc = this.excursionControlador.buscarExcursion(idExcursion);
-        if(exc == null){
-            datosUtil.mostrarError("Excursión no encontrada");
-            return false;
-        }
-        int tipo = datosUtil.pedirOpcion("¿Elegir socio o Crear uno nuevo?", "Elegir socio", "Crear nuevo socio");
-        if(tipo == 2) {
-            Socio soc = socioControlador.crearSocio();
-        } else if (tipo == 0) {
-            return false;
-        }
+ //      int idExcursion = vistaInscripciones.pedirExcursionInsc();
+ //      if (idExcursion == -1) {
+ //          return false;
+ //      }
+ //      Excursion exc = this.excursionControlador.buscarExcursion(idExcursion);
+ //      if(exc == null){
+ //          datosUtil.mostrarError("Excursión no encontrada");
+ //          return false;
+ //      }
+ //      int tipo = datosUtil.pedirOpcion("¿Elegir socio o Crear uno nuevo?", "Elegir socio", "Crear nuevo socio");
+ //      if(tipo == 2) {
+ //          Socio soc = socioControlador.crearSocio();
+ //      } else if (tipo == 0) {
+ //          return false;
+ //      }
 //        if(ayuda == 1){
 //            boolean noHay = socioControlador.mostrarSocios(0,4);
 //            if(!noHay){
@@ -109,21 +138,112 @@ public class InscripcionControlador {
 //                return false;
 //            }
 //        }
-        int strSocio = vistaInscripciones.pedirSocioInsc();
-        if (strSocio == 0) {
-            return false;
-        }
-        Socio soc = this.socioControlador.buscarSocio(strSocio);
-        if(soc == null){
-            datosUtil.mostrarError("Socio no encontrado");
-            return false;
-        }
-        String codigo = getCodigoExcursion(soc.getIdSocio(), exc.getCodigo());
-        Inscripcion ins = new Inscripcion(codigo, soc, exc);
+  //      int strSocio = vistaInscripciones.pedirSocioInsc();
+  //      if (strSocio == 0) {
+  //          return false;
+  //      }
+  //      Socio soc = this.socioControlador.buscarSocio(strSocio);
+  //      if(soc == null){
+  //          datosUtil.mostrarError("Socio no encontrado");
+  //          return false;
+  //      }
+  //      String codigo = getCodigoExcursion(soc.getIdSocio(), exc.getCodigo());
+  //      Inscripcion ins = new Inscripcion(codigo, soc, exc);
+//
+  //      DAOFactory.getInscripcionDao().insertar(ins);
+  //      vistaInscripciones.mostrarInscripciones(ins.toString());
+  //      return true;
 
-        DAOFactory.getInscripcionDao().insertar(ins);
-        vistaInscripciones.mostrarInscripciones(ins.toString());
-        return true;
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Ingresar Inscripcion");
+
+        Label codigoLabel = new Label("Código:");
+        TextField codigoField = new TextField();
+        codigoField.setPromptText("Ingrese el Código");
+
+        Label fechaLabel = new Label("Fecha:");
+        DatePicker fechaPicker = new DatePicker();
+
+        Label excLabel = new Label("ID Excrusion:");
+        TextField excField = new TextField();
+        codigoField.setPromptText("Ingrese el ID de la excursion");
+
+        Label socioLabel = new Label("ID Socio:");
+        TextField socioField = new TextField();
+        codigoField.setPromptText("Ingrese el ID del Socio");
+
+
+        if(inscripcion != null){
+            codigoField.setText(inscripcion.getCodigo());
+            fechaPicker.setValue(inscripcion.getFechaInscripcion().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
+            excField.setText(String.valueOf(inscripcion.getExcursion()));
+            socioField.setText(String.valueOf(inscripcion.getSocio()));
+        }
+
+        Button modificarButton = new Button("Modificar");
+        modificarButton.setOnAction(event -> {
+            String codigo = codigoField.getText();
+            LocalDate fecha = (fechaPicker.getValue() != null) ? fechaPicker.getValue() : null;
+            String exc = excField.getText();
+            String soc = socioField.getText();
+
+            if (codigo.isEmpty() || fecha == null || exc.isEmpty() || soc.isEmpty()) {
+                mostrarAlerta("Por favor, complete todos los campos.");
+                return;
+            }
+
+                mostrarInscripcion(inscripcion);
+                vistaInscripciones.mostrarInscripciones(inscripcion.toString());
+                modalStage.close();
+
+        });
+        Button aceptarButton = new Button("Aceptar");
+        Button cancelarButton = new Button("Cancelar");
+        aceptarButton.setOnAction(event -> {
+            String codigo = codigoField.getText();
+            LocalDate fecha = (fechaPicker.getValue() != null) ? fechaPicker.getValue() : null;
+            String soc = socioField.getText();
+            String exc = excField.getText();
+
+            if (codigo.isEmpty() || fecha == null || exc.isEmpty() || soc.isEmpty()) {
+                mostrarAlerta("Por favor, complete todos los campos.");
+                return;
+            }
+
+
+        });
+        cancelarButton.setOnAction(event -> modalStage.close());
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.add(codigoLabel, 0, 0);
+        grid.add(codigoField, 1, 0);
+
+        grid.add(fechaLabel, 0, 2);
+        grid.add(fechaPicker, 1, 2);
+
+        grid.add(excLabel, 0, 3);
+        grid.add(excField, 1, 3);
+
+        grid.add(socioLabel, 0, 4);
+        grid.add(socioField, 1, 4);
+
+        HBox buttonBox = null;
+        if(inscripcion != null){
+            buttonBox = new HBox(10, modificarButton, cancelarButton);
+        } else {
+            buttonBox = new HBox(10, aceptarButton, cancelarButton);
+        }
+        buttonBox.setPadding(new Insets(10));
+        grid.add(buttonBox, 1, 5);
+
+        Scene scene = new Scene(grid, 400, 250);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
     }
 
     public String getCodigoExcursion(int socNoSocio, String excCodigo){
@@ -247,7 +367,7 @@ public class InscripcionControlador {
     }
 
 
-//    public boolean eliminarInscripcion(){
+     public boolean eliminarInscripcion(){
 //        Inscripcion insc = buscarInscripcion();
 //        if(insc == null){
 //            datosUtil.mostrarError("Inscripción no encontrada");
@@ -258,8 +378,8 @@ public class InscripcionControlador {
 //            return false;
 //        }
 //        DAOFactory.getInscripcionDao().eliminar(insc.getIdInscripcion());
-//        return true;
-//    }
+        return true;
+    }
 
     public boolean compararFecha(Date fecha){
         Date fechaActual = new Date();
@@ -312,5 +432,4 @@ public class InscripcionControlador {
         vistaInscripciones.mostrarCuota(cuota, totalExc, nExc);
         return true;
     }
-
 }
