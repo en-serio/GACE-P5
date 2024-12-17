@@ -2,6 +2,7 @@ package gace;
 
 import gace.controlador.ExcursionControlador;
 import gace.controlador.MenuControlador;
+import gace.controlador.SocioControlador;
 import gace.modelo.utils.HibernateUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +25,7 @@ public class Main extends Application {
             BorderPane root = loader.load();
             Scene scene = new Scene(root);
             scene.getStylesheets().addAll(Objects.requireNonNull(this.getClass().getResource("/styles/style.css")).toExternalForm());
-
+            SocioControlador sc = new SocioControlador();
             primaryStage.setScene(scene);
             primaryStage.setTitle("GACE - Gestión de Actividades Culturales y Excursiones");
             primaryStage.show();
