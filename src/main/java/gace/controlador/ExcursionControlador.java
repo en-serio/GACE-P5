@@ -23,6 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jdk.jfr.Percentage;
+import org.hibernate.tool.schema.internal.IndividuallySchemaMigratorImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -306,8 +307,6 @@ public class ExcursionControlador {
             return;
         }
 
-        //int opcion = datosUtil.pedirOpcion("¿Está seguro de que desea cancelar la excursión?", "Sí", "No");
-
         int cantidad = DAOFactory.getExcursionDao().cancelar(exc);
         datosUtil.mostrarInfo("Se han cancelado "+cantidad+" inscripciones");
     }
@@ -331,7 +330,6 @@ public class ExcursionControlador {
             cancelarExcursion(exc);
             mostrarExcursiones();
             modalStage.close();
-
         });
 
         Button crearInscripcion = new Button("Crear Inscripción");
@@ -377,6 +375,11 @@ public class ExcursionControlador {
         }else{
             gentLabel = new Label("Gent Inscrita: " + insc.size());
         }
+        gentLabel.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+
+            }
+        });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -421,15 +424,41 @@ public class ExcursionControlador {
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Crear Inscripción");
 
+
+        List<Socio> socios = DAOFactory.getSocioDao().listar();
+        ArrayList<String> nombres = new ArrayList<>();
+        for (Socio socio : socios){
+            nombres.add(socio.getIdSocio()+ "- "+ socio.getNombre()+ " "+ socio.getApellido()+ ", " + socio.getTipoSocio());
+        }
+        ObservableList<String> sociosData = FXCollections.observableArrayList(nombres);
+
+        ComboBox<String> socioComboBox = new ComboBox<>(sociosData);
+
         Button aceptarButton = new Button("Aceptar");
         Button cancelarButton = new Button("Cancelar");
         aceptarButton.setOnAction(event -> {
-
+            String selec = socioComboBox.getValue();
+            if(selec == null){
+                datosUtil.mostrarError("Seleccione un socio");
+                return;
+            }
+            int id = Integer.parseInt(selec.split("-")[0].trim());
+            Socio selectedSocio = DAOFactory.getSocioDao().buscar(id);
+            if(selectedSocio == null){
+                datosUtil.mostrarError("Socio no encontrado");
+                return;
+            }
+            String codi = InscripcionControlador.getCodigoExcursion(selectedSocio.getIdSocio(), exc.getCodigo());
+            Inscripcion insc = new Inscripcion(codi, selectedSocio, exc);
+            DAOFactory.getInscripcionDao().insertar(insc);
+            modalStage.close();
         });
         cancelarButton.setOnAction(event -> modalStage.close());
-        List<Socio> socios = DAOFactory.getSocioDao().listar();
-        //Esta modal esta dentro de una modal, crea aqui un seleccionador de los registros del list de arriba
-
+        VBox layout = new VBox(10, socioComboBox, aceptarButton, cancelarButton);
+        layout.setPadding(new Insets(20));
+        Scene scene = new Scene(layout, 400, 300);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
     }
 
 

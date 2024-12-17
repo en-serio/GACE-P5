@@ -254,7 +254,7 @@ public class InscripcionControlador {
         modalStage.showAndWait();
     }
 
-    public String getCodigoExcursion(int socNoSocio, String excCodigo){
+    public static String getCodigoExcursion(int socNoSocio, String excCodigo){
         return socNoSocio + excCodigo;
     }
 
