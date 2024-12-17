@@ -53,5 +53,6 @@ buildNumber.properties
 /src/main/resources/hibernate.cfg.xml
 /src/main/target/classes/hibernate.cfg.xml
 
-out\
+out/
 out/artifacts/Producto4_jar/Producto4.jar
+out/production/Producto4/
