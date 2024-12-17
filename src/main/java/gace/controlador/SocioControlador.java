@@ -225,7 +225,8 @@ public class SocioControlador {
         tipoSocioCombo.getItems().addAll("ESTÁNDAR", "FEDERADO", "INFANTIL");
 
         Dialog<String> dialog = new Dialog<>();
-        dialog.getDialogPane().setPrefSize(470, 350);
+        dialog.setHeight(400);
+        dialog.setWidth(500);
         dialog.setTitle("Registrar Socio");
         dialog.setHeaderText("Por favor ingrese los datos del socio:");
 
