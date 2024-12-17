@@ -351,6 +351,7 @@ public class ExcursionControlador {
         grid.setPadding(new Insets(10));
         grid.setHgap(10);
         grid.setVgap(10);
+        grid.setAlignment(Pos.CENTER);
         grid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         ColumnConstraints col1 = new ColumnConstraints();
@@ -406,8 +407,7 @@ public class ExcursionControlador {
 
         StackPane root = new StackPane(grid);
         root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root,400,250);
         modalStage.setScene(scene);
         modalStage.showAndWait();
     }
