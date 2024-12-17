@@ -74,6 +74,8 @@
     -fx-border-width: 2px; /* Ancho de borde para un efecto de robustez */
     -fx-cursor: hand; /* Cursor de mano cuando se pasa sobre el botón */
     -fx-background-insets: 0, 1; /* El efecto de profundidad hace que el botón sea más atractivo */
+    -fx-pref-width: 150px; /* Ancho preferido del botón */
+    -fx-pref-height: 50px; /* Altura preferida del botón */
 }
 
 .button:hover {

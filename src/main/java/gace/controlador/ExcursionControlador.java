@@ -30,6 +30,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
+/**
+ * Falta la part del botó de buscar.
+ * Falta crear una funció crear inscripció.
+ * -
+ * Insertar, modificar, eliminar fet.
+ * Cancelar fet.
+ */
 public class ExcursionControlador {
     private DatosUtil datosUtil;
     private VistaExcursion vistaExcursion;
@@ -329,10 +337,9 @@ public class ExcursionControlador {
         Button modificarExcursio = new Button("Modificar Excursio");
         modificarExcursio.setOnAction(event -> {
             novaExcursio(exc);
-            mostrarExcursiones();
             modalStage.close();
+            mostrarExcursiones();
         });
-
 
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
@@ -408,11 +415,17 @@ public class ExcursionControlador {
         });
 
         tableView.setItems(datos);
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                mostrarDetalle(newSelection);
+        tableView.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2) {
+                Excursion exc = tableView.getSelectionModel().getSelectedItem();
+                mostrarDetalle(exc);
             }
         });
+//        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+//            if (newSelection != null) {
+//                mostrarDetalle(newSelection);
+//            }
+//        });
     }
 
 }

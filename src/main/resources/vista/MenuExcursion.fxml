@@ -13,7 +13,7 @@
 
             <Region prefHeight="26.0" HBox.hgrow="ALWAYS" />
 
-            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="61.0" text="Filtrar" />
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="61.0" text="Excursion" />
         </HBox>
         <Region prefHeight="20.0" prefWidth="600.0" />
 
