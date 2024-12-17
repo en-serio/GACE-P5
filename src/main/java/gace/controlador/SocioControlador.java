@@ -6,8 +6,12 @@ import gace.modelo.dao.DAOFactory;
 import gace.vista.VistaSocios;
 import gace.vista.DatosUtil;
 
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.fxml.FXML;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
@@ -16,6 +20,9 @@ import javafx.scene.layout.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 public class SocioControlador {
     private VistaSocios vistaSocios;
@@ -54,6 +61,103 @@ public class SocioControlador {
         listaSocios = FXCollections.observableArrayList(socios);
 
         tablaSocios.setItems(listaSocios);
+        tablaSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                mostrarDetalle(newSelection);
+            }
+        });
+    }
+
+    public void mostrarDetalle(Socio soc){
+        GridPane grid = null;
+        //VBox o posem StackPane?
+        if(soc instanceof SocioEstandar){
+            grid = mostrarSocioEst((SocioEstandar) soc);
+        }else if(soc instanceof SocioFederado){
+            grid = mostrarSocioFed((SocioFederado) soc);
+        }else if(soc instanceof SocioInfantil){
+            grid = mostrarSocioInf((SocioInfantil) soc);
+        }
+        if(grid == null){
+            return;
+        }
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Detalles Socio " + soc.getIdSocio());
+
+
+//        Button modificarSocio = new Button("Modificar Socio");
+//        modificarSocio.setOnAction(event -> {
+//            nuevoSocio();
+//            cargarTablaSocios();
+//            modalStage.close();
+//        });
+
+
+        grid.setPadding(new Insets(10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+//        HBox buttonBox = new HBox(10, aceptarButton, modificarExcursio);
+//        buttonBox.setPadding(new Insets(10));
+//        grid.add(buttonBox, 1, 5);
+
+        Scene scene = new Scene(grid, 400, 250);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
+    }
+
+    private GridPane mostrarSocioEst(SocioEstandar soc){
+        GridPane grid = new GridPane();
+        grid.add(new Label("ID: " ), 0, 0);
+        grid.add(new Label(String.valueOf(soc.getIdSocio())), 1, 0);
+
+        grid.add(new Label("Nombre: "), 0, 1);
+        grid.add(new Label(soc.getNombre()), 1, 1);
+
+        grid.add(new Label("Apellido: "), 0, 2);
+        grid.add(new Label(soc.getApellido()), 1, 2);
+
+        grid.add(new Label("Nif: "), 0, 3);
+        grid.add(new Label(soc.getNif()), 1, 3);
+
+        grid.add(new Label("Tipo de Seguro: "), 0, 4);
+        grid.add( new Label((soc.getSeguro().isTipo() ? "Completo" : "Estándar") + " - (" + soc.getSeguro().getPrecio()+")"), 1, 4);
+        return grid;
+    }
+    private GridPane mostrarSocioFed(SocioFederado soc){
+        GridPane grid = new GridPane();
+        grid.add(new Label("ID: " ), 0, 0);
+        grid.add(new Label(String.valueOf(soc.getIdSocio())), 1, 0);
+
+        grid.add(new Label("Nombre: "), 0, 1);
+        grid.add(new Label(soc.getNombre()), 1, 1);
+
+        grid.add(new Label("Apellido: "), 0, 2);
+        grid.add(new Label(soc.getApellido()), 1, 2);
+
+        grid.add(new Label("Nif: "), 0, 3);
+        grid.add(new Label(soc.getNif()), 1, 3);
+
+        grid.add(new Label("Tipo de Seguro: "), 0, 4);
+        grid.add( new Label((soc.getFederacion().getCodigo()) + " - " + soc.getFederacion().getNombre()), 1, 4);
+        return grid;
+    }
+    private GridPane mostrarSocioInf(SocioInfantil soc){
+        GridPane grid = new GridPane();
+        grid.add(new Label("ID: " ), 0, 0);
+        grid.add(new Label(String.valueOf(soc.getIdSocio())), 1, 0);
+
+        grid.add(new Label("Nombre: "), 0, 1);
+        grid.add(new Label(soc.getNombre()), 1, 1);
+
+        grid.add(new Label("Apellido: "), 0, 2);
+        grid.add(new Label(soc.getApellido()), 1, 2);
+
+        grid.add(new Label("Tutor: "), 0, 3);
+        grid.add(new Label(String.valueOf(soc.getNoTutor())), 1, 3);
+        grid.add(new Label(""), 0, 4);
+        return grid;
     }
 
     @FXML
@@ -153,7 +257,7 @@ public class SocioControlador {
                     infoExtra.getChildren().addAll(hboxInfo, hboxOption);
                     break;
                 case "FEDERADO":
-                    infoExtra.getChildren().addAll(
+                    infoExtra.getChildren().addAll(new Label("NIF:"), nifField,
                             new Label("Código Fed:"), codigoField,
                             new Label("Nombre Fed:"), nombreFedField);
                     break;
@@ -170,29 +274,58 @@ public class SocioControlador {
             if (dialogButton == buttonTypeOk) {
                 String nombre = nombreField.getText();
                 String apellido = apellidoField.getText();
-                String tipoSocio = tipoSocioCombo.getValue();
-
-
-                if (nombre.isEmpty() || apellido.isEmpty() || tipoSocio == null) {
+                if (nombre.isEmpty() || apellido.isEmpty() || tipoSocioCombo.getValue() == null ) {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
                     alert.show();
                     return null;
                 }
-                /*
-                Aqui ha de fer un switch per a cada tipus de soci i agafar les dades que facin falta
-                per crear un nou soci utilitzant els DAOFactory.getSocioDao().insertar(soci);
-                */
 
+                switch (tipoSocioCombo.getValue()){
+                    case "ESTÁNDAR":
+                        String nifEst = nifField.getText();
+                        double precio = Double.parseDouble(precioField.getText());
+                        boolean tipo = tipoSeguro.getValue().equals("COMPLETO");
+                        if (nifEst.isEmpty() || precio == 0 ) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
+                            alert.show();
+                            return null;
+                        }
+                        Seguro seg = new Seguro(tipo, precio);
+                        DAOFactory.getSeguroDao().insertar(seg);
+                        DAOFactory.getSocioDao().insertar(new SocioEstandar(nombre, apellido, nifEst, seg));
+                        break;
+                    case "FEDERADO":
+                        String nifFed = nifField.getText();
+                        String codigo = codigoField.getText();
+                        String nombreFed = nombreFedField.getText();
+                        if (nifFed.isEmpty() || codigo.isEmpty() ) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
+                            alert.show();
+                            return null;
+                        }
+                        Federacion fed = new Federacion(codigo, nombreFed);
+                        DAOFactory.getFederacionDao().insertar(fed);
+                        DAOFactory.getSocioDao().insertar(new SocioFederado(nombre, apellido, nifFed, fed));
+                        break;
+                    case "INFANTIL":
+                        int tutor = Integer.parseInt(tutorField.getText());
+                        if (tutor == 0 ) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
+                            alert.show();
+                            return null;
+                        }
+                        DAOFactory.getSocioDao().insertar(new SocioInfantil(nombre, apellido, tutor));
+                        break;
+                }
+                cargarTablaSocios();
             }
             return null;
         });
 
-        // Mostrar el diálogo y esperar la respuesta
         dialog.showAndWait();
     }
     @FXML
     private void handleEliminar(ActionEvent event) {
-        // Crear un cuadro de entrada para que el usuario ingrese el ID del socio a eliminar
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Eliminar Socio");
         dialog.setHeaderText("Por favor, ingrese el ID del socio a eliminar:");
@@ -271,60 +404,39 @@ public class SocioControlador {
                             new Label("Tipo de Socio:"), tipoSocioCombo);
                     modificarDialog.getDialogPane().setContent(vbox);
 
-                    // Configurar la lógica para guardar los cambios
-                    modificarDialog.setResultConverter(dialogButton -> {
-                        if (dialogButton == buttonTypeOk) {
-                            String nuevoNombre = nombreField.getText();
-                            String nuevoApellido = apellidoField.getText();
-                            String nuevoTipoSocio = tipoSocioCombo.getValue();
 
-                            if (nuevoNombre.isEmpty() || nuevoApellido.isEmpty() || nuevoTipoSocio == null) {
-                                Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
-                                alert.show();
-                                return null;
-                            }
-
-                            return nuevoTipoSocio + "," + nuevoNombre + "," + nuevoApellido;
-                        }
-                        return null;
-                    });
-
-                    // Mostrar el diálogo y aplicar los cambios
-                    modificarDialog.showAndWait().ifPresent(result -> {
-                        if (result != null) {
-                            String[] datosModificados = result.split(",");
-                            String nuevoTipoSocio = datosModificados[0];
-                            String nuevoNombre = datosModificados[1];
-                            String nuevoApellido = datosModificados[2];
-
-                            // Actualizar el socio existente con los nuevos datos
-                            socioAModificar.setNombre(nuevoNombre);
-                            socioAModificar.setApellido(nuevoApellido);
-
-                            // Si el tipo de socio cambia, convertirlo al nuevo tipo
-                            if (!getTipoSocio(socioAModificar).equals(nuevoTipoSocio)) {
-                                Socio socioNuevo = null;
-                                switch (nuevoTipoSocio) {
-                                    case "ESTÁNDAR":
-                                        socioNuevo = new SocioEstandar(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF123", new Seguro(1, true, 40));
-                                        break;
-                                    case "FEDERADO":
-                                        socioNuevo = new SocioFederado(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF456", new Federacion("020", "0202"));
-                                        break;
-                                    case "INFANTIL":
-                                        socioNuevo = new SocioInfantil(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, 123);
-                                        break;
-                                }
-
-                                // Reemplazar en la lista
-                                listaSocios.set(listaSocios.indexOf(socioAModificar), socioNuevo);
-                            }
-
-                            // Actualizar la tabla
-                            tablaSocios.setItems(listaSocios);
-                            tablaSocios.refresh();  // Forzar actualización de la tabla
-                        }
-                    });
+//                    modificarDialog.showAndWait().ifPresent(result -> {
+//                        String nuevoNombre = nombreField.getText();
+//                        String nuevoApellido = apellidoField.getText();
+//                        String nuevoTipoSocio = tipoSocioCombo.getValue();
+//                            // Actualizar el socio existente con los nuevos datos
+//                            socioAModificar.setNombre(nuevoNombre);
+//                            socioAModificar.setApellido(nuevoApellido);
+//
+//                            // Si el tipo de socio cambia, convertirlo al nuevo tipo
+//                            if (!getTipoSocio(socioAModificar).equals(nuevoTipoSocio)) {
+//                                Socio socioNuevo = null;
+//                                switch (nuevoTipoSocio) {
+//                                    case "ESTÁNDAR":
+//                                        socioNuevo = new SocioEstandar(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF123", new Seguro(1, true, 40));
+//                                        break;
+//                                    case "FEDERADO":
+//                                        socioNuevo = new SocioFederado(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF456", new Federacion("020", "0202"));
+//                                        break;
+//                                    case "INFANTIL":
+//                                        socioNuevo = new SocioInfantil(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, 123);
+//                                        break;
+//                                }
+//
+//                                // Reemplazar en la lista
+//                                listaSocios.set(listaSocios.indexOf(socioAModificar), socioNuevo);
+//                            }
+//
+//                            // Actualizar la tabla
+//                            tablaSocios.setItems(listaSocios);
+//                            tablaSocios.refresh();  // Forzar actualización de la tabla
+//                        }
+//                    });
 
                 } else {
                     datosUtil.mostrarError("Socio no encontrado No se encontró un socio con el ID " + idSocio + ".");
@@ -415,21 +527,15 @@ public class SocioControlador {
 
 
     public SocioEstandar nouSociEstandar(String nombre,String apellido){
-        String nif = vistaSocios.formNif();
-        if(nif == null){
-            datosUtil.mostrarError("Nif no válido.");
-            return null;
-        }
-        if(existeNif(nif)){
-            datosUtil.mostrarError("Nif ya existe.");
-            return null;
-        }
-        Seguro seg = nuevoSeg();
-        if(seg == null){
-            datosUtil.mostrarError("Seguro no válido.");
-            return null;
-        }
+        String nif = "1567848F";
+//        if(existeNif(nif)){
+//            datosUtil.mostrarError("Nif ya existe.");
+//            return null;
+//        }
+        Seguro seg = new Seguro(true,15.5);/*nuevoSeg();*/
         DAOFactory.getSeguroDao().insertar(seg);
+        DAOFactory.getSocioDao().insertar(new SocioEstandar(nombre, apellido, nif, seg));
+        System.out.println("Socio creado");
         return new SocioEstandar( nombre, apellido, nif, seg);
     }
 
