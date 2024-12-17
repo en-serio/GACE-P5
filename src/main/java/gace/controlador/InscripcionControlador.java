@@ -156,6 +156,8 @@ public class InscripcionControlador {
 
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setWidth(800);
+        modalStage.setHeight(600);
         modalStage.setTitle("Ingresar Inscripcion");
 
         Label codigoLabel = new Label("Código:");
@@ -165,6 +167,12 @@ public class InscripcionControlador {
         Label fechaLabel = new Label("Fecha:");
         DatePicker fechaPicker = new DatePicker();
 
+        /*
+        *  BUSCAR A BBDD REGISTRES
+        * */
+
+//        ComboBox<String> soc = new ComboBox<>();
+//        soc.getItems().addAll("ESTÁNDAR", "FEDERADO", "INFANTIL");
         Label excLabel = new Label("ID Excrusion:");
         TextField excField = new TextField();
         codigoField.setPromptText("Ingrese el ID de la excursion");

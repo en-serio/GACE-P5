@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static javafx.geometry.Pos.CENTER;
+
 
 /**
  * Falta la part del botó de buscar.
@@ -312,20 +314,15 @@ public class ExcursionControlador {
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Detalles Excursión" + exc.getCodigo());
-        Label idExc = new Label("ID: " );
-        Label idText = new Label(String.valueOf(exc.getId()));
+        Label idExc = new Label("ID: " + exc.getId());
 
-        Label codiExc = new Label("Codi: ");
-        Label codiText = new Label(exc.getCodigo());
+        Label codiExc = new Label("Codi: " + exc.getCodigo());
 
-        Label nomExc = new Label("Descripción: ");
-        Label nomText = new Label(exc.getDescripcion());
+        Label nomExc = new Label("Descripción: " + exc.getDescripcion());
 
-        Label dataExc = new Label("Data: " );
-        Label dataText = new Label(new SimpleDateFormat("dd/MM/yyyy").format(exc.getFecha()));
+        Label dataExc = new Label("Data: " + new SimpleDateFormat("dd/MM/yyyy").format(exc.getFecha()));
 
-        Label preuExc = new Label("Preu: ");
-        Label preuText = new Label(String.valueOf(exc.getPrecio()));
+        Label preuExc = new Label("Preu: " + exc.getPrecio());
 
         Button aceptarButton = new Button("Cancelar Excursio");
         aceptarButton.setOnAction(event -> {
@@ -334,6 +331,9 @@ public class ExcursionControlador {
             modalStage.close();
 
         });
+
+        Button nuevaInscripcion = new Button("Nueva Excursio");
+        Button crearInscripcion = new Button("Crear Inscripción");
         Button modificarExcursio = new Button("Modificar Excursio");
         modificarExcursio.setOnAction(event -> {
             novaExcursio(exc);
@@ -345,29 +345,63 @@ public class ExcursionControlador {
         grid.setPadding(new Insets(10));
         grid.setHgap(10);
         grid.setVgap(10);
+        grid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
+        ColumnConstraints col1 = new ColumnConstraints();
+        ColumnConstraints col2 = new ColumnConstraints();
+        ColumnConstraints col3 = new ColumnConstraints();
+        col1.setPercentWidth(33.33);
+        col2.setPercentWidth(33.33);
+        col3.setPercentWidth(33.33);
+
+        setLabelStyle(idExc, codiExc, dataExc);
         grid.add(idExc, 0, 0);
-        grid.add(idText, 1, 0);
+        grid.add(codiExc, 1, 0);
+        grid.add(dataExc, 2, 0);
 
-        grid.add(codiExc, 0, 1);
-        grid.add(codiText, 1, 1);
+        nomExc.setStyle("-fx-background-color: lightgreen; -fx-padding: 20;");
+        nomExc.setMaxWidth(Double.MAX_VALUE);
+        nomExc.setAlignment(CENTER);
 
-        grid.add(nomExc, 0, 2);
-        grid.add(nomText, 1, 2);
+        grid.add(nomExc, 0, 1, 3, 2);
 
-        grid.add(dataExc, 0, 3);
-        grid.add(dataText, 1, 3);
+        Label gentLabel = new Label("GENT INSCRITA");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        grid.add(preuExc, 0, 4);
-        grid.add(preuText, 1, 4);
+        HBox hbox = new HBox(10, gentLabel, spacer, preuExc);
+        hbox.setAlignment(CENTER);
+        hbox.setMaxWidth(Double.MAX_VALUE);
 
-        HBox buttonBox = new HBox(10, aceptarButton, modificarExcursio);
-        buttonBox.setPadding(new Insets(10));
-        grid.add(buttonBox, 1, 5);
+        grid.add(hbox, 0, 3, 3, 1);
 
-        Scene scene = new Scene(grid, 400, 250);
+        nuevaInscripcion.setMaxWidth(Double.MAX_VALUE);
+        crearInscripcion.setMaxWidth(Double.MAX_VALUE);
+        modificarExcursio.setMaxWidth(Double.MAX_VALUE);
+
+        HBox buttonsBox = new HBox(10, nuevaInscripcion, crearInscripcion, modificarExcursio);
+        buttonsBox.setAlignment(CENTER);
+        HBox.setHgrow(nuevaInscripcion, Priority.ALWAYS);
+        HBox.setHgrow(crearInscripcion, Priority.ALWAYS);
+        HBox.setHgrow(modificarExcursio, Priority.ALWAYS);
+
+        grid.add(buttonsBox, 0, 4, 3, 1);
+
+        StackPane root = new StackPane(grid);
+        root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        Scene scene = new Scene(root);
         modalStage.setScene(scene);
         modalStage.showAndWait();
+    }
+
+    private void setLabelStyle(Label... labels) {
+        for (Label label : labels) {
+            label.setStyle("-fx-background-color: lightgreen; -fx-padding: 10; -fx-alignment: center;");
+            label.setMaxWidth(Double.MAX_VALUE);
+            label.setAlignment(CENTER);
+            //Pos.CENTER
+        }
     }
 
 
