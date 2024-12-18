@@ -15,10 +15,10 @@
 
         <TableView fx:id="tablaSocios" prefHeight="250" prefWidth="450">
             <columns>
-                <TableColumn fx:id="columnaID" prefWidth="100" text="ID" />
-                <TableColumn fx:id="columnaNombre" prefWidth="115" text="Nombre" />
-                <TableColumn fx:id="columnaApellido" prefWidth="115" text="Apellido" />
-                <TableColumn fx:id="columnaTipo" prefWidth="120" text="Tipo de Socio" />
+                <TableColumn fx:id="columnaID" prefWidth="120" text="ID" />
+                <TableColumn fx:id="columnaNombre" prefWidth="135" text="Nombre" />
+                <TableColumn fx:id="columnaApellido" prefWidth="135" text="Apellido" />
+                <TableColumn fx:id="columnaTipo" prefWidth="140" text="Tipo de Socio" />
             </columns>
         </TableView>
 

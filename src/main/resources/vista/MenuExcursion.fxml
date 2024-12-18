@@ -22,9 +22,6 @@
 
         <HBox alignment="CENTER" spacing="10">
             <Button onAction="#novaExc" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
-
-            <Region prefHeight="26.0" HBox.hgrow="ALWAYS" />
-
             <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="61.0" text="Buscar" onAction="#buscarExcursiones"/>
         </HBox>
 
