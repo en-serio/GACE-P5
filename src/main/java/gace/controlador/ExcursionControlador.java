@@ -281,19 +281,19 @@ public class ExcursionControlador {
 
 
                 if (excursionEncontrada != null) {
-                    //mostrarDetalle(excursionEncontrada);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Excursión Encontrada");
-                    alert.setHeaderText("Detalles de la Excursión:");
-                    alert.setContentText(
-                            "ID: " + excursionEncontrada.getId() + "\n" +
-                                    "Código: " + excursionEncontrada.getCodigo() + "\n" +
-                                    "Descripción: " + excursionEncontrada.getDescripcion() + "\n" +
-                                    "Fecha: " + excursionEncontrada.getFecha() + "\n" +
-                                    "Número de Días: " + excursionEncontrada.getNoDias() + "\n" +
-                                    "Precio: " + excursionEncontrada.getPrecio()
-                    );
-                    alert.showAndWait();
+                    mostrarDetalle(excursionEncontrada);
+//                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//                    alert.setTitle("Excursión Encontrada");
+//                    alert.setHeaderText("Detalles de la Excursión:");
+//                    alert.setContentText(
+//                            "ID: " + excursionEncontrada.getId() + "\n" +
+//                                    "Código: " + excursionEncontrada.getCodigo() + "\n" +
+//                                    "Descripción: " + excursionEncontrada.getDescripcion() + "\n" +
+//                                    "Fecha: " + excursionEncontrada.getFecha() + "\n" +
+//                                    "Número de Días: " + excursionEncontrada.getNoDias() + "\n" +
+//                                    "Precio: " + excursionEncontrada.getPrecio()
+//                    );
+//                    alert.showAndWait();
                 } else {
 
                     datosUtil.mostrarError(
@@ -471,7 +471,7 @@ public class ExcursionControlador {
 
         StackPane root = new StackPane(grid);
         root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        Scene scene = new Scene(root,400,250);
+        Scene scene = new Scene(root,500,250);
         modalStage.setScene(scene);
         modalStage.showAndWait();
     }

@@ -40,12 +40,13 @@ public class MenuControlador {
 
     @FXML
     public void menuSocio() {
-        cargarVista("/vista/MenuSocio.fxml");
+        SocioControlador sCont = (SocioControlador) cargarVista("/vista/MenuSocio.fxml");
+        sCont.mostrarSocios();
     }
-    @FXML
-    public void menuInscripcion() {
-        cargarVista("/vista/MenuInscripcion.fxml");
-    }
+//    @FXML
+//    public void menuInscripcion() {
+//        cargarVista("/vista/MenuInscripcion.fxml");
+//    }
     @FXML
     public void menuExcursion() {
         ExcursionControlador eCont = (ExcursionControlador) cargarVista("/vista/MenuExcursion.fxml");

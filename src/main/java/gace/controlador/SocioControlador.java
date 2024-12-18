@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.fxml.FXML;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,10 +72,39 @@ public class SocioControlador {
         columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
         columnaTipo.setCellValueFactory(new PropertyValueFactory<>("tipoSocio"));
 
-        cargarTablaSocios();
+        mostrarSocios();
     }
 
-    private void cargarTablaSocios() {
+    public void mostrarSocios(){
+        List<Socio> socs = DAOFactory.getSocioDao().listar();
+        if(socs == null){
+            datosUtil.mostrarError("No hay Socios para mostrar");
+            return;
+        }
+
+        ObservableList<Socio> datos = FXCollections.observableArrayList(socs);
+
+        // Establecer los datos en la ListView
+        columnaID.setCellValueFactory(new PropertyValueFactory<>("idSocio"));
+        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        columnaTipo.setCellValueFactory(new PropertyValueFactory<>("tipoSocio"));
+
+        tablaSocios.setItems(datos);
+        tablaSocios.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2) {
+                Socio soc = tablaSocios.getSelectionModel().getSelectedItem();
+                mostrarDetalle(soc);
+            }
+        });
+//        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+//            if (newSelection != null) {
+//                mostrarDetalle(newSelection);
+//            }
+//        });
+    }
+
+    public void cargarTablaSocios() {
         List<Socio> socios = DAOFactory.getSocioDao().listar();
         listaSocios = FXCollections.observableArrayList(socios);
 
@@ -106,6 +136,7 @@ public class SocioControlador {
         cancelarExcursio.setOnAction(event -> {
             borrarSocio(soc);
             modalStage.close();
+            cargarTablaSocios();
         });
         GridPane grid = null;
         Label excLabel = null;
