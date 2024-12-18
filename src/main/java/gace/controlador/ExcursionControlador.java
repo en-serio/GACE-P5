@@ -40,7 +40,8 @@ import static javafx.geometry.Pos.CENTER;
 
 /**
  * Falta la part del botó de buscar.
- * Falta crear una funció crear inscripció.
+ * Canviar estil de Gent inscita perque es noti que es pot fer doble click.
+ * Canviar height de les columns de mostrar detalle.
  * -
  * Insertar, modificar, eliminar fet.
  * Cancelar fet.
@@ -360,6 +361,8 @@ public class ExcursionControlador {
         col1.setPercentWidth(33.33);
         col2.setPercentWidth(33.33);
         col3.setPercentWidth(33.33);
+        grid.getColumnConstraints().addAll(col1, col2, col3);
+
 
         setLabelStyle(idExc, codiExc, dataExc);
         grid.add(idExc, 0, 0);
@@ -402,6 +405,7 @@ public class ExcursionControlador {
         HBox.setHgrow(cancelarExcursio, Priority.ALWAYS);
         HBox.setHgrow(crearInscripcion, Priority.ALWAYS);
         HBox.setHgrow(modificarExcursio, Priority.ALWAYS);
+        buttonsBox.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         grid.add(buttonsBox, 0, 4, 3, 1);
 
