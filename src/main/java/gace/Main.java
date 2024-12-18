@@ -23,7 +23,7 @@ public class Main extends Application {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/Escena.fxml"));
             BorderPane root = loader.load();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 900,400);
             scene.getStylesheets().addAll(Objects.requireNonNull(this.getClass().getResource("/styles/style.css")).toExternalForm());
             SocioControlador sc = new SocioControlador();
             primaryStage.setScene(scene);
