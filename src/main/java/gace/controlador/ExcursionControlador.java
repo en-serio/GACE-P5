@@ -13,6 +13,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -38,7 +40,8 @@ import static javafx.geometry.Pos.CENTER;
 
 /**
  * Falta la part del botó de buscar.
- * Falta crear una funció crear inscripció.
+ * Canviar estil de Gent inscita perque es noti que es pot fer doble click.
+ * Canviar height de les columns de mostrar detalle.
  * -
  * Insertar, modificar, eliminar fet.
  * Cancelar fet.
@@ -358,6 +361,8 @@ public class ExcursionControlador {
         col1.setPercentWidth(33.33);
         col2.setPercentWidth(33.33);
         col3.setPercentWidth(33.33);
+        grid.getColumnConstraints().addAll(col1, col2, col3);
+
 
         setLabelStyle(idExc, codiExc, dataExc);
         grid.add(idExc, 0, 0);
@@ -378,7 +383,7 @@ public class ExcursionControlador {
         }
         gentLabel.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-
+                mostraInsc(insc, exc.getCodigo());
             }
         });
 
@@ -400,6 +405,7 @@ public class ExcursionControlador {
         HBox.setHgrow(cancelarExcursio, Priority.ALWAYS);
         HBox.setHgrow(crearInscripcion, Priority.ALWAYS);
         HBox.setHgrow(modificarExcursio, Priority.ALWAYS);
+        buttonsBox.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         grid.add(buttonsBox, 0, 4, 3, 1);
 
@@ -417,6 +423,42 @@ public class ExcursionControlador {
             label.setAlignment(CENTER);
             //Pos.CENTER
         }
+    }
+
+    private void mostraInsc(List<Inscripcion> insc, String exc) {
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Inscripciones para la excursión "+ exc);
+
+        ListView<String> listView = new ListView<>();
+        listView.setPrefSize(400, 300);
+        listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                return new ListCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            setText(item);
+                        }
+                    }
+                };
+            }
+        });
+
+        for (Inscripcion ins : insc) {
+            listView.getItems().add("INSC- " + ins.getCodigo() + " - Socio: " + ins.getSocio().getIdSocio()+" "+ins.getSocio().getNombre()+ " "+ins.getSocio().getApellido());
+        }
+
+        Button cerrarButton = new Button("Cerrar");
+        cerrarButton.setOnAction(event -> modalStage.close());
+
+        VBox layout = new VBox(10, listView, cerrarButton);
+        layout.setPadding(new Insets(20));
+        Scene scene = new Scene(layout);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
     }
 
     public void crearInscripcion(Excursion exc){
