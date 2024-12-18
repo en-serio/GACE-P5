@@ -12,7 +12,6 @@
         <VBox fx:id="menuVBox" spacing="10" styleClass="menu-left" style="-fx-padding: 10;">
             <Button fx:id="inicioButton" text="Inicio" onAction="#inicio" styleClass="menu-button"/>
             <Button fx:id="sociosButton" text="Socios" onAction="#menuSocio" styleClass="menu-button"/>
-            <Button fx:id="inscripcionesButton" text="Inscripciones" onAction="#menuInscripcion" styleClass="menu-button"/>
             <Button fx:id="excursionesButton" text="Excursiones" onAction="#menuExcursion" styleClass="menu-button"/>
         </VBox>
     </left>
