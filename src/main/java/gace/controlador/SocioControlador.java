@@ -25,6 +25,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.w3c.dom.Text;
 
 import static javafx.geometry.Pos.CENTER;
@@ -101,7 +102,7 @@ public class SocioControlador {
         });
         GridPane grid = null;
         Label excLabel = null;
-        List<Inscripcion> insc = null;
+        List<Inscripcion> insc;
         //VBox o posem StackPane?
         if(soc instanceof SocioEstandar){
             grid = mostrarSocioEst((SocioEstandar) soc);
@@ -112,6 +113,8 @@ public class SocioControlador {
         }else if(soc instanceof SocioInfantil){
             grid = mostrarSocioInf((SocioInfantil) soc);
             insc = DAOFactory.getInscripcionDao().ListarXSocioInf(soc);
+        } else {
+            insc = null;
         }
         if(grid == null){
             return;
@@ -120,16 +123,14 @@ public class SocioControlador {
             excLabel = new Label("Excursiones Inscritas: 0");
         }else{
             excLabel = new Label("Excursiones Inscritas: " + insc.size());
-        }
+            excLabel.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        excLabel.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                //TODO PER FER
-                System.out.println("Mostrar insc");
-                mostrarInsc(soc);
-                cargarTablaSocios();
-            }
-        });
+            excLabel.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) {
+                    mostrarInsc(insc, soc);
+                }
+            });
+        }
 
         Button crearInscripcion = new Button("Crear Inscripción");
         crearInscripcion.setOnAction(event -> {
@@ -168,7 +169,7 @@ public class SocioControlador {
         hbox.setAlignment(CENTER);
         hbox.setMaxWidth(Double.MAX_VALUE);
 
-        grid.add(hbox, 0, 3, 6, 1);
+        grid.add(hbox, 0, 4, 6, 1);
 
         cancelarExcursio.setMaxWidth(Double.MAX_VALUE);
         crearInscripcion.setMaxWidth(Double.MAX_VALUE);
@@ -181,11 +182,12 @@ public class SocioControlador {
         HBox.setHgrow(modificarExcursio, Priority.ALWAYS);
         buttonsBox.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        grid.add(buttonsBox, 0, 4, 6, 1);
+        grid.add(buttonsBox, 0, 5, 6, 1);
 
         StackPane root = new StackPane(grid);
         root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        Scene scene = new Scene(root,400,250);
+        Scene scene = new Scene(root,600,400);
+        modalStage.setResizable(false);
         modalStage.setScene(scene);
         modalStage.showAndWait();
     }
@@ -288,8 +290,40 @@ public class SocioControlador {
         });
     }
 
-    private void mostrarInsc(Socio soc){
+    private void mostrarInsc(List<Inscripcion> insc, Socio soc){
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Inscripciones del socio " + soc.getIdSocio() );
 
+        ListView<String> listView = new ListView<>();
+        listView.setPrefSize(400, 300);
+        listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                return new ListCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            setText(item);
+                        }
+                    }
+                };
+            }
+        });
+
+        for (Inscripcion ins : insc) {
+            listView.getItems().add("INSC- " + ins.getCodigo() + " - Excursio: " + ins.getExcursion().getId()+" "+ins.getExcursion().getCodigo()+ " "+ ins.getExcursion().getFecha()+" "+ins.getExcursion().getDescripcion());
+        }
+
+        Button cerrarButton = new Button("Cerrar");
+        cerrarButton.setOnAction(event -> modalStage.close());
+
+        VBox layout = new VBox(10, listView, cerrarButton);
+        layout.setPadding(new Insets(20));
+        Scene scene = new Scene(layout);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
     }
 
     private void borrarSocio(Socio soc){
