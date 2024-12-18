@@ -1,5 +1,6 @@
 package gace.controlador;
 
+import com.mysql.cj.result.Row;
 import gace.modelo.Excursion;
 import gace.modelo.Inscripcion;
 import gace.modelo.Socio;
@@ -317,7 +318,7 @@ public class ExcursionControlador {
     public void mostrarDetalle(Excursion exc){
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
-        modalStage.setTitle("Detalles Excursión" + exc.getCodigo());
+        modalStage.setTitle("Detalles Excursión");
         Label idExc = new Label("ID: " + exc.getId());
 
         Label codiExc = new Label("Codi: " + exc.getCodigo());
@@ -362,18 +363,35 @@ public class ExcursionControlador {
         col2.setPercentWidth(33.33);
         col3.setPercentWidth(33.33);
         grid.getColumnConstraints().addAll(col1, col2, col3);
+        RowConstraints row1 = new RowConstraints();
+        RowConstraints row1coma5 =  new RowConstraints();
+        RowConstraints row2 = new RowConstraints();
+        RowConstraints row3 = new RowConstraints();
+        RowConstraints row4 = new RowConstraints();
+        RowConstraints row5 = new RowConstraints();
 
+        row1.setPercentHeight(10);
+        row1coma5.setPercentHeight(10);
+        row2.setPercentHeight(20);
+        row3.setPercentHeight(20);
+        row4.setPercentHeight(20);
+        row5.setPercentHeight(20);
+
+        grid.getRowConstraints().addAll(row1, row2, row3, row4, row5);
+        Label nom = new Label();
+        nom.setText("Detalles de la excursión:" + exc.getCodigo());
+        grid.add(nom, 0,0,3,1);
 
         setLabelStyle(idExc, codiExc, dataExc);
-        grid.add(idExc, 0, 0);
-        grid.add(codiExc, 1, 0);
-        grid.add(dataExc, 2, 0);
+        grid.add(idExc, 0, 1);
+        grid.add(codiExc, 1, 1);
+        grid.add(dataExc, 2, 1);
 
-        nomExc.setStyle("-fx-background-color: lightgreen; -fx-padding: 20;");
         nomExc.setMaxWidth(Double.MAX_VALUE);
+        nomExc.setMaxHeight(Double.MAX_VALUE);
         nomExc.setAlignment(CENTER);
 
-        grid.add(nomExc, 0, 1, 3, 2);
+        grid.add(nomExc, 0, 2, 3, 2);
         Label gentLabel = null;
         List<Inscripcion> insc = DAOFactory.getInscripcionDao().listarXExc(exc);
         if(insc == null){
@@ -381,6 +399,8 @@ public class ExcursionControlador {
         }else{
             gentLabel = new Label("Gent Inscrita: " + insc.size());
         }
+        gentLabel.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
         gentLabel.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 mostraInsc(insc, exc.getCodigo());
@@ -393,8 +413,9 @@ public class ExcursionControlador {
         HBox hbox = new HBox(10, gentLabel, spacer, preuExc);
         hbox.setAlignment(CENTER);
         hbox.setMaxWidth(Double.MAX_VALUE);
+        hbox.setMaxHeight(Double.MAX_VALUE);
 
-        grid.add(hbox, 0, 3, 3, 1);
+        grid.add(hbox, 0, 4, 3, 1);
 
         cancelarExcursio.setMaxWidth(Double.MAX_VALUE);
         crearInscripcion.setMaxWidth(Double.MAX_VALUE);
@@ -407,7 +428,7 @@ public class ExcursionControlador {
         HBox.setHgrow(modificarExcursio, Priority.ALWAYS);
         buttonsBox.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        grid.add(buttonsBox, 0, 4, 3, 1);
+        grid.add(buttonsBox, 0, 5, 3, 1);
 
         StackPane root = new StackPane(grid);
         root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -419,6 +440,7 @@ public class ExcursionControlador {
     private void setLabelStyle(Label... labels) {
         for (Label label : labels) {
             label.setStyle("-fx-background-color: lightgreen; -fx-padding: 10; -fx-alignment: center;");
+            label.setMaxHeight(Double.MAX_VALUE);
             label.setMaxWidth(Double.MAX_VALUE);
             label.setAlignment(CENTER);
             //Pos.CENTER

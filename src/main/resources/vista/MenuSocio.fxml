@@ -23,7 +23,7 @@
         </TableView>
 
         <HBox alignment="CENTER" spacing="10">
-            <Button fx:id="btnRegistrar" onAction="#handleRegistrar" text="Registrar" />
+            <Button fx:id="btnRegistrar" onAction="#handleRegistrarF" text="Registrar" />
             <Button fx:id="btnModificar" onAction="#handleModificar" text="Modificar" />
             <Button fx:id="btnEliminar" onAction="#handleEliminar" text="Eliminar" />
             <Button fx:id="btnBuscar" onAction="#handleBuscar" text="Buscar" />
