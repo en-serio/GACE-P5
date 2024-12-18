@@ -32,7 +32,7 @@ import javafx.collections.FXCollections;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
+import org.hibernate.tool.schema.extract.spi.InformationExtractor;
 
 
 import static javafx.geometry.Pos.CENTER;
@@ -129,13 +129,16 @@ public class SocioControlador {
         if(grid == null){
             return;
         }
-
+        if(insc == null){
+            insc = new ArrayList<Inscripcion>();
+        }
         excLabel = new Label("Excursiones Inscritas: " + insc.size());
         excLabel.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
+        List<Inscripcion> finalInsc = insc;
         excLabel.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-                mostrarInsc(insc, soc);
+                mostrarInsc(finalInsc, soc);
             }
         });
 
