@@ -10,6 +10,7 @@ import gace.vista.DatosUtil;
 import gace.vista.VistaExcursion;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -251,22 +252,66 @@ public class ExcursionControlador {
         return dateFormat.parse(fechaFormato);
     }
 
-    public Excursion pedirExcursion(){
-        String codigo = vistaExcursion.pedirExc();
-        Excursion exc = buscarExcursion(codigo);
-        if(exc == null){
-            datosUtil.mostrarError("Excursion no encontrada");
-            return null;
-        }
-        vistaExcursion.detalleExcursion(exc.toString());
-        return exc;
-    }
+//    public Excursion pedirExcursion(){
+//        String codigo = vistaExcursion.pedirExc();
+//        Excursion exc = buscarExcursion(codigo);
+//        if(exc == null){
+//            datosUtil.mostrarError("Excursion no encontrada");
+//            return null;
+//        }
+//        vistaExcursion.detalleExcursion(exc.toString());
+//        return exc;
+//    }
+//
+//    public Excursion buscarExcursion(int id_excursion){
+//        return DAOFactory.getExcursionDao().buscar(id_excursion);
+//    }
+//    public Excursion buscarExcursion(String codigo){
+//        return DAOFactory.getExcursionDao().buscar(codigo);
+//    }
+    @FXML
+    private void buscarExcursiones(ActionEvent event) {
 
-    public Excursion buscarExcursion(int id_excursion){
-        return DAOFactory.getExcursionDao().buscar(id_excursion);
-    }
-    public Excursion buscarExcursion(String codigo){
-        return DAOFactory.getExcursionDao().buscar(codigo);
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Buscar Excursión");
+        dialog.setHeaderText("Por favor, ingrese el ID de la excursión a buscar:");
+        dialog.setContentText("ID de la Excursión:");
+
+        dialog.showAndWait().ifPresent(idInput -> {
+            try {
+                // Convertir el ID ingresado a un número
+                int idExcursion = Integer.parseInt(idInput);
+
+
+                Excursion excursionEncontrada = excursionDao.buscar(idExcursion);
+
+
+                if (excursionEncontrada != null) {
+                    //mostrarDetalle(excursionEncontrada);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Excursión Encontrada");
+                    alert.setHeaderText("Detalles de la Excursión:");
+                    alert.setContentText(
+                            "ID: " + excursionEncontrada.getId() + "\n" +
+                                    "Código: " + excursionEncontrada.getCodigo() + "\n" +
+                                    "Descripción: " + excursionEncontrada.getDescripcion() + "\n" +
+                                    "Fecha: " + excursionEncontrada.getFecha() + "\n" +
+                                    "Número de Días: " + excursionEncontrada.getNoDias() + "\n" +
+                                    "Precio: " + excursionEncontrada.getPrecio()
+                    );
+                    alert.showAndWait();
+                } else {
+
+                    datosUtil.mostrarError(
+                            "No se encontró una excursión con el ID " + idExcursion + ".");
+                }
+
+            } catch (NumberFormatException e) {
+
+                datosUtil.mostrarError(
+                        "El ID ingresado no es válido. Por favor, ingrese un número.");
+            }
+        });
     }
 
 //    public boolean eliminarExcursion(){
