@@ -12,13 +12,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.fxml.FXML;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+
 
 import javafx.event.ActionEvent;
-import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -26,7 +25,6 @@ import javafx.collections.FXCollections;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.w3c.dom.Text;
 
 import static javafx.geometry.Pos.CENTER;
 
@@ -34,7 +32,7 @@ import static javafx.geometry.Pos.CENTER;
  * -fet Canviar eventlistener per doble click com a excursion
  * mostrar detalle per socio Federado i per socio Infantil Com el de Socio estandar
  * Posar be el mostrar socio
- * implementar les funcions del todo.
+ * -fet implementar les funcions del todo.
  */
 
 public class SocioControlador {
@@ -59,13 +57,11 @@ public class SocioControlador {
     private ObservableList<Socio> listaSocios;
 
     public void initialize() {
-        // Configurar las columnas para que apunten a los getters de la clase Socio
         columnaID.setCellValueFactory(new PropertyValueFactory<>("idSocio"));
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
         columnaTipo.setCellValueFactory(new PropertyValueFactory<>("tipoSocio"));
 
-        // Cargar los socios falsos en la tabla
         cargarTablaSocios();
     }
 
@@ -134,9 +130,7 @@ public class SocioControlador {
 
         Button crearInscripcion = new Button("Crear Inscripción");
         crearInscripcion.setOnAction(event -> {
-            //TODO PONER BIEN
-            System.out.println("Crear Inscripción");
-            //crearInscripcion(soc);
+            crearInscripcion(soc);
             modalStage.close();
         });
 
@@ -322,6 +316,51 @@ public class SocioControlador {
         VBox layout = new VBox(10, listView, cerrarButton);
         layout.setPadding(new Insets(20));
         Scene scene = new Scene(layout);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
+    }
+
+    public void crearInscripcion(Socio soc){
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Crear Inscripción");
+
+
+        List<Excursion> excs = DAOFactory.getExcursionDao().listar();
+        Date fechaActual = new Date();
+        ArrayList<String> nombres = new ArrayList<>();
+        for (Excursion exc : excs){
+            if(exc.getFecha().after(fechaActual)){
+                nombres.add(exc.getId()+ "- "+ exc.getCodigo()+ " "+ exc.getDescripcion()+ ", " + exc.getPrecio());
+            }
+        }
+        ObservableList<String> sociosData = FXCollections.observableArrayList(nombres);
+
+        ComboBox<String> socioComboBox = new ComboBox<>(sociosData);
+
+        Button aceptarButton = new Button("Aceptar");
+        Button cancelarButton = new Button("Cancelar");
+        aceptarButton.setOnAction(event -> {
+            String selec = socioComboBox.getValue();
+            if(selec == null){
+                datosUtil.mostrarError("Seleccione un socio");
+                return;
+            }
+            int id = Integer.parseInt(selec.split("-")[0].trim());
+            Excursion selectedExc = DAOFactory.getExcursionDao().buscar(id);
+            if(selectedExc == null){
+                datosUtil.mostrarError("Socio no encontrado");
+                return;
+            }
+            String codi = InscripcionControlador.getCodigoExcursion(soc.getIdSocio(), selectedExc.getCodigo());
+            Inscripcion insc = new Inscripcion(codi, soc, selectedExc);
+            DAOFactory.getInscripcionDao().insertar(insc);
+            modalStage.close();
+        });
+        cancelarButton.setOnAction(event -> modalStage.close());
+        VBox layout = new VBox(10, socioComboBox, aceptarButton, cancelarButton);
+        layout.setPadding(new Insets(20));
+        Scene scene = new Scene(layout, 400, 300);
         modalStage.setScene(scene);
         modalStage.showAndWait();
     }

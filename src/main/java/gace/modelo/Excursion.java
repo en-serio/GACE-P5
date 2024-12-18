@@ -2,7 +2,6 @@ package gace.modelo;
 
 import java.util.Date;
 import jakarta.persistence.*;
-import org.hibernate.annotations.ManyToAny;
 
 @Entity
 @Table(name = "excursion")
