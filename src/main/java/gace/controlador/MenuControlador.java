@@ -74,6 +74,7 @@ public class MenuControlador {
     public void initialize() {
         // Cargar la vista de inicio cuando la aplicación arranca
         cargarVista("/vista/Inicial.fxml");
+
     }
 
 /*

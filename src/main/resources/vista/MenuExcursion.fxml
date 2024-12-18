@@ -8,23 +8,20 @@
     <VBox alignment="CENTER" prefHeight="400" prefWidth="500" spacing="15">
         <Label alignment="center" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Gestión de Excursiones" />
 
-        <TableView fx:id="tableView" prefHeight="250" prefWidth="450">
+        <TableView fx:id="tableView" prefHeight="250" prefWidth="630">
             <columns>
                 <TableColumn fx:id="columnId" text="ID" />
-                <TableColumn fx:id="columnCodigo" text="Código" />
-                <TableColumn fx:id="columnDescripcion" prefWidth="245.20001220703125" text="Descripción" />
-                <TableColumn fx:id="columnFecha" prefWidth="39.5999755859375" text="Fecha" />
-                <TableColumn fx:id="columnCantidad" prefWidth="78.60003662109375" text="Cantidad" />
-                <TableColumn fx:id="columnPrecio" prefWidth="78.5999755859375" text="Precio" />
+                <TableColumn fx:id="columnCodigo" prefWidth="90" text="Código" />
+                <TableColumn fx:id="columnDescripcion" prefWidth="240" text="Descripción" />
+                <TableColumn fx:id="columnFecha" prefWidth="80" text="Fecha" />
+                <TableColumn fx:id="columnCantidad" prefWidth="110" text="Cantidad" />
+                <TableColumn fx:id="columnPrecio" prefWidth="110" text="Precio" />
             </columns>
         </TableView>
 
 
         <HBox alignment="CENTER" spacing="10">
             <Button onAction="#novaExc" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
-
-            <Region prefHeight="26.0" HBox.hgrow="ALWAYS" />
-
             <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="61.0" text="Buscar" onAction="#buscarExcursiones"/>
         </HBox>
 

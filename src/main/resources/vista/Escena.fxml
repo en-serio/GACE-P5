@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gace.controlador.MenuControlador">
     <left>
-        <VBox fx:id="menuVBox" spacing="10" styleClass="menu-left" style="-fx-padding: 10;">
+        <VBox fx:id="menuVBox" spacing="10" styleClass="menu-left" style="-fx-padding: 10;" prefWidth="200">
             <Button fx:id="inicioButton" text="Inicio" onAction="#inicio" styleClass="menu-button"/>
             <Button fx:id="sociosButton" text="Socios" onAction="#menuSocio" styleClass="menu-button"/>
             <Button fx:id="excursionesButton" text="Excursiones" onAction="#menuExcursion" styleClass="menu-button"/>
@@ -17,8 +17,6 @@
     </left>
 
     <center>
-        <StackPane fx:id="contenedorPane" >
-
-        </StackPane>
+        <StackPane fx:id="contenedorPane" />
     </center>
 </BorderPane>
