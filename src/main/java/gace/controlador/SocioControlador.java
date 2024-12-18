@@ -587,6 +587,7 @@ public class SocioControlador {
         dialog.setHeaderText("Por favor, ingrese el ID del socio a modificar:");
         dialog.setContentText("ID del Socio:");
 
+
         // Mostrar el diálogo y obtener el ID ingresado por el usuario
         dialog.showAndWait().ifPresent(idInput -> {
             try {
@@ -598,76 +599,9 @@ public class SocioControlador {
 
                 // Si el socio se encuentra
                 if (socioAModificar != null) {
-                    // Crear los campos de entrada con los datos actuales del socio
-                    TextField nombreField = new TextField(socioAModificar.getNombre());
-                    TextField apellidoField = new TextField(socioAModificar.getApellido());
-                    ComboBox<String> tipoSocioCombo = new ComboBox<>();
-                    tipoSocioCombo.getItems().addAll("ESTÁNDAR", "FEDERADO", "INFANTIL");
-                    tipoSocioCombo.setValue(getTipoSocio(socioAModificar)); // Establecer el valor correcto en el ComboBox
-
-                    // Crear el diálogo
-                    Dialog<ButtonType> modificarDialog = new Dialog<>();
-                    modificarDialog.setTitle("Modificar Socio");
-                    modificarDialog.setHeaderText("Modifique los datos del socio:");
-
-                    ButtonType buttonTypeOk = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-                    ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    modificarDialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
-
-                    VBox vbox = new VBox(10);
-                    vbox.getChildren().addAll(new Label("Nombre:"), nombreField,
-                            new Label("Apellido:"), apellidoField,
-                            new Label("Tipo de Socio:"), tipoSocioCombo);
-                    modificarDialog.getDialogPane().setContent(vbox);
-
-                    // Manejar la respuesta del usuario (si hizo clic en "Guardar")
-                    Optional<ButtonType> result = modificarDialog.showAndWait();
-                    if (result.isPresent() && result.get() == buttonTypeOk) {
-                        String nuevoNombre = nombreField.getText();
-                        String nuevoApellido = apellidoField.getText();
-                        String nuevoTipoSocio = tipoSocioCombo.getValue();
-
-                        // Actualizar el socio existente con los nuevos datos
-                        socioAModificar.setNombre(nuevoNombre);
-                        socioAModificar.setApellido(nuevoApellido);
-
-                        // Si el tipo de socio cambia, crear el nuevo socio con el tipo actualizado
-                        if (!getTipoSocio(socioAModificar).equals(nuevoTipoSocio)) {
-                            Socio socioNuevo = null;
-                            switch (nuevoTipoSocio) {
-                                case "ESTÁNDAR":
-                                    socioNuevo = new SocioEstandar(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF123", new Seguro(1, true, 40));
-                                    break;
-                                case "FEDERADO":
-                                    socioNuevo = new SocioFederado(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF456", new Federacion("020", "0202"));
-                                    break;
-                                case "INFANTIL":
-                                    socioNuevo = new SocioInfantil(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, 123);
-                                    break;
-                            }
-
-                            // Reemplazar el socio antiguo por el nuevo en la lista
-                            listaSocios.remove(socioAModificar);
-                            listaSocios.add(socioNuevo);
-                            socioAModificar = socioNuevo; // Ahora socioAModificar se convierte en el socio nuevo
-                        }
-
-                        // Actualizar la tabla
-                        tablaSocios.setItems(listaSocios);
-                        tablaSocios.refresh();  // Forzar actualización de la tabla
-
-                        // Modificar el socio en la base de datos
-                        if (socioAModificar instanceof SocioEstandar) {
-                            DAOFactory.getSocioEstandarDao().modificar((SocioEstandar) socioAModificar);
-                        } else if (socioAModificar instanceof SocioFederado) {
-                            DAOFactory.getSocioFederadoDao().modificar((SocioFederado) socioAModificar);
-                        } else if (socioAModificar instanceof SocioInfantil) {
-                            DAOFactory.getSocioInfantilDao().modificar((SocioInfantil) socioAModificar);
-                        }
-
-                        // Mostrar mensaje de éxito
-                        datosUtil.mostrarMensaje("Socio modificado", "El socio con ID " + idSocio + " ha sido modificado.");
-                    }
+                    handleRegistrar(socioAModificar);
+                    dialog.close();
+                    cargarTablaSocios();
                 } else {
                     // Mostrar mensaje de error si no se encontró el socio
                     datosUtil.mostrarError("No se encontró un socio con el ID " + idSocio + ".");
