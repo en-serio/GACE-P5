@@ -56,3 +56,4 @@ buildNumber.properties
 out/
 out/artifacts/Producto4_jar/Producto4.jar
 out/production/Producto4/
+*.jar

@@ -30,7 +30,7 @@ import org.w3c.dom.Text;
 import static javafx.geometry.Pos.CENTER;
 
 /**
- * Canviar eventlistener per doble click com a excursion
+ * -fet Canviar eventlistener per doble click com a excursion
  * mostrar detalle per socio Federado i per socio Infantil Com el de Socio estandar
  * Posar be el mostrar socio
  * implementar les funcions del todo.
@@ -73,9 +73,10 @@ public class SocioControlador {
         listaSocios = FXCollections.observableArrayList(socios);
 
         tablaSocios.setItems(listaSocios);
-        tablaSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                mostrarDetalle(newSelection);
+        tablaSocios.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2) {
+                Socio soc = tablaSocios.getSelectionModel().getSelectedItem();
+                mostrarDetalle(soc);
             }
         });
     }
@@ -92,13 +93,11 @@ public class SocioControlador {
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Detalles Socio " + soc.getIdSocio());
-        Button cancelarExcursio = new Button("Cancelar Excursio");
+        Button cancelarExcursio = new Button("Eliminar socio");
         cancelarExcursio.setOnAction(event -> {
-            //cancelarExcursion(exc);
-            //mostrarExcursiones();
-            //TODO CAMBIAR A BIEN
-            System.out.println("Cancelar Excursio");
+            borrarSocio(soc);
             modalStage.close();
+
         });
         GridPane grid = null;
         Label excLabel = null;
@@ -125,9 +124,10 @@ public class SocioControlador {
 
         excLabel.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-                //TODO PONER TODO BIEN
+                //TODO PER FER
                 System.out.println("Mostrar insc");
-                //mostraInsc(insc, exc.getCodigo());
+                mostrarInsc(soc);
+                cargarTablaSocios();
             }
         });
 
@@ -139,11 +139,9 @@ public class SocioControlador {
             modalStage.close();
         });
 
-        Button modificarExcursio = new Button("Modificar Excursio");
+        Button modificarExcursio = new Button("Modificar Socio");
         modificarExcursio.setOnAction(event -> {
-            //TODO PONER BIEN
-            System.out.println("Modificar Excursio");
-            //nuevosoc(exc);
+            handleRegistrar(soc);
             modalStage.close();
             cargarTablaSocios();
         });
@@ -153,13 +151,11 @@ public class SocioControlador {
         grid.setAlignment(Pos.CENTER);
         grid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-        ColumnConstraints col1 = new ColumnConstraints();
-        ColumnConstraints col2 = new ColumnConstraints();
-        ColumnConstraints col3 = new ColumnConstraints();
-        col1.setPercentWidth(33.33);
-        col2.setPercentWidth(33.33);
-        col3.setPercentWidth(33.33);
-        grid.getColumnConstraints().addAll(col1, col2, col3);
+        for (int i = 0; i < 6; i++) {
+            ColumnConstraints col = new ColumnConstraints();
+            col.setPercentWidth(16.67);
+            grid.getColumnConstraints().add(col);
+        }
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -172,7 +168,7 @@ public class SocioControlador {
         hbox.setAlignment(CENTER);
         hbox.setMaxWidth(Double.MAX_VALUE);
 
-        grid.add(hbox, 0, 3, 3, 1);
+        grid.add(hbox, 0, 3, 6, 1);
 
         cancelarExcursio.setMaxWidth(Double.MAX_VALUE);
         crearInscripcion.setMaxWidth(Double.MAX_VALUE);
@@ -185,7 +181,7 @@ public class SocioControlador {
         HBox.setHgrow(modificarExcursio, Priority.ALWAYS);
         buttonsBox.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        grid.add(buttonsBox, 0, 4, 3, 1);
+        grid.add(buttonsBox, 0, 4, 6, 1);
 
         StackPane root = new StackPane(grid);
         root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -205,18 +201,17 @@ public class SocioControlador {
         Label segudoSoc = new Label("Tipo de Seguro: " + (soc.getSeguro().isTipo() ? "Completo" : "Estándar") + " - (" + soc.getSeguro().getPrecio()+")");
 
         Label nifSoc = new Label("Nif: "+ soc.getNif());
-        setLabelStyle(idSoc, nifSoc);
-        grid.add(idSoc, 0, 0);
-        grid.add(nifSoc, 1, 0);
+        grid.add(idSoc, 0, 0, 3,1);
+        grid.add(nifSoc, 3, 0, 3,1);
 
         setLabelStyle(nombreSoc, apellidoSoc);
-        grid.add(nombreSoc, 0, 0);
-        grid.add(apellidoSoc, 1, 0);
+        grid.add(nombreSoc, 0, 1,3,1);
+        grid.add(apellidoSoc, 3, 1,3,1);
 
         segudoSoc.setStyle("-fx-background-color: lightgreen; -fx-padding: 20;");
         segudoSoc.setMaxWidth(Double.MAX_VALUE);
         segudoSoc.setAlignment(CENTER);
-        grid.add(segudoSoc, 0, 1, 3, 2);
+        grid.add(segudoSoc, 0, 2, 6, 2);
         return grid;
     }
     private GridPane mostrarSocioFed(SocioFederado soc){
@@ -293,11 +288,33 @@ public class SocioControlador {
         });
     }
 
+    private void mostrarInsc(Socio soc){
 
+    }
+
+    private void borrarSocio(Socio soc){
+        List<Inscripcion> insc = null;
+        if(soc instanceof SocioEstandar){
+            insc = DAOFactory.getInscripcionDao().ListarXSocioEst(soc);
+        }else if(soc instanceof SocioFederado){
+            insc = DAOFactory.getInscripcionDao().ListarXSocioFed(soc);
+        }else if(soc instanceof SocioInfantil){
+            insc = DAOFactory.getInscripcionDao().ListarXSocioInf(soc);
+        }
+        if(insc == null){
+            DAOFactory.getSocioDao().eliminar(soc.getIdSocio());
+        }else{
+            Alert alert = new Alert(Alert.AlertType.ERROR, "El socio cuenta con inscripciones activas");
+            alert.show();
+        }
+    }
 
     @FXML
-    private void handleRegistrar(ActionEvent event) {
-        // Crear los campos de entrada para el nombre, apellido y tipo de socio
+    private void handleRegistrarF(){
+        handleRegistrar(null);
+    }
+    @FXML
+    private void handleRegistrar(Socio soc) {
         TextField nombreField = new TextField();
         TextField apellidoField = new TextField();
         TextField nifField = new TextField();
@@ -326,37 +343,85 @@ public class SocioControlador {
         VBox vbox = new VBox(10);
         HBox hbox = new HBox(10);
         hbox.getChildren().addAll(new Label("Nombre:"), nombreField, new Label("Apellido:"), apellidoField);
-        vbox.getChildren().addAll(hbox, new Label("Tipo de Socio:"), tipoSocioCombo);
+        VBox infoExtra = new VBox(10);
+        if(soc == null) {
+            vbox.getChildren().addAll(hbox, new Label("Tipo de Socio:"), tipoSocioCombo);
+        }else{
+            String value = null;
+            if(soc instanceof SocioEstandar){
+                tipoSocioCombo.setValue("ESTANDAR");
+                value = "ESTANDAR";
+            }else if(soc instanceof SocioFederado){
+                tipoSocioCombo.setValue("FEDERADO");
+                value = "FEDERADO";
+            }else{
+                tipoSocioCombo.setValue("INFANTIL");
+                value = "INFANTIL";
+            }
+            vbox.getChildren().addAll(hbox, new Label("Tipo: " + value));
+        }
         dialog.getDialogPane().setContent(vbox);
 
-        VBox infoExtra = new VBox(10);
+
         VBox contenido = new VBox(10);
         contenido.getChildren().add(vbox);
-        tipoSocioCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.equals(oldValue)){
-                return;
-            }
-            infoExtra.getChildren().clear();
-            switch (newValue){
-                case "ESTÁNDAR":
-                    HBox hboxInfo = new HBox(10);
-                    HBox hboxOption = new HBox(10);
-                    hboxInfo.getChildren().addAll(new Label("NIF:"), nifField, new Label("Precio:"), precioField);
-                    hboxOption.getChildren().addAll(new Label("Tipo de Seguro:"), tipoSeguro);
-                    infoExtra.getChildren().addAll(hboxInfo, hboxOption);
-                    break;
-                case "FEDERADO":
-                    infoExtra.getChildren().addAll(new Label("NIF:"), nifField,
-                            new Label("Código Fed:"), codigoField,
-                            new Label("Nombre Fed:"), nombreFedField);
-                    break;
-                case "INFANTIL":
-                    infoExtra.getChildren().addAll(
-                            new Label("Tutor:"), tutorField);
-                    break;
+        if(soc == null) {
+            tipoSocioCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.equals(oldValue)) {
+                    return;
+                }
+                infoExtra.getChildren().clear();
+                switch (newValue) {
+                    case "ESTÁNDAR":
+                        HBox hboxInfo = new HBox(10);
+                        HBox hboxOption = new HBox(10);
+                        hboxInfo.getChildren().addAll(new Label("NIF:"), nifField, new Label("Precio:"), precioField);
+                        hboxOption.getChildren().addAll(new Label("Tipo de Seguro:"), tipoSeguro);
+                        infoExtra.getChildren().addAll(hboxInfo, hboxOption);
+                        break;
+                    case "FEDERADO":
+                        infoExtra.getChildren().addAll(new Label("NIF:"), nifField,
+                                new Label("Código Fed:"), codigoField,
+                                new Label("Nombre Fed:"), nombreFedField);
+                        break;
+                    case "INFANTIL":
+                        infoExtra.getChildren().addAll(
+                                new Label("Tutor:"), tutorField);
+                        break;
+                }
+                contenido.getChildren().add(infoExtra);
+            });
+        }
+        if(soc != null){
+            nombreField.setText(soc.getNombre());
+            apellidoField.setText(soc.getApellido());
+
+            if(soc instanceof SocioEstandar){
+                tipoSocioCombo.setValue("ESTÁNDAR");
+                nifField.setText(((SocioEstandar) soc).getNif());
+                precioField.setText(String.valueOf(((SocioEstandar) soc).getSeguro().getPrecio()));
+                tipoSeguro.setValue(((SocioEstandar) soc).getSeguro().isTipo()? "COMPLETO" : "ESTANDAR");
+                HBox hboxInfo = new HBox(10);
+                HBox hboxOption = new HBox(10);
+                hboxInfo.getChildren().addAll(new Label("NIF:"), nifField, new Label("Precio:"), precioField);
+                hboxOption.getChildren().addAll(new Label("Tipo de Seguro:"), tipoSeguro);
+                infoExtra.getChildren().addAll(hboxInfo, hboxOption);
+            }else if(soc instanceof SocioFederado){
+                tipoSocioCombo.setValue("FEDERADO");
+                nifField.setText(((SocioFederado) soc).getNif());
+                codigoField.setText(((SocioFederado) soc).getFederacion().getCodigo());
+                nombreFedField.setText(((SocioFederado) soc).getFederacion().getNombre());
+                infoExtra.getChildren().addAll(new Label("NIF:"), nifField,
+                        new Label("Código Fed:"), codigoField,
+                        new Label("Nombre Fed:"), nombreFedField);
+            }else{
+                tipoSocioCombo.setValue("INFANTIL");
+                tutorField.setText(String.valueOf(((SocioInfantil) soc).getNoTutor()));
+                infoExtra.getChildren().addAll(
+                        new Label("Tutor:"), tutorField);
             }
             contenido.getChildren().add(infoExtra);
-        });
+        }
         dialog.getDialogPane().setContent(contenido);
 
         dialog.setResultConverter(dialogButton -> {
@@ -368,42 +433,91 @@ public class SocioControlador {
                     alert.show();
                     return null;
                 }
+                if(soc != null){
+                    soc.setNombre(nombre);
+                    soc.setApellido(apellido);
+                }
 
                 switch (tipoSocioCombo.getValue()){
                     case "ESTÁNDAR":
                         String nifEst = nifField.getText();
                         double precio = Double.parseDouble(precioField.getText());
                         boolean tipo = tipoSeguro.getValue().equals("COMPLETO");
-                        if (nifEst.isEmpty() || precio == 0 || existeNif(nifEst)) {
+                        if(soc == null){
+                            if(existeNif(nifEst)){
+                                Alert alert = new Alert(Alert.AlertType.ERROR, "Nif ya registrado");
+                                alert.show();
+                                return null;
+                            }
+                        }
+                        if (nifEst.isEmpty() || precio == 0 ) {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
+                            System.out.println("1- " + nifEst);
+                            System.out.println("2- "+ precio);
+                            System.out.println("3- "+existeNif(nifEst));
                             alert.show();
                             return null;
                         }
                         Seguro seg = new Seguro(tipo, precio);
                         DAOFactory.getSeguroDao().insertar(seg);
-                        DAOFactory.getSocioDao().insertar(new SocioEstandar(nombre, apellido, nifEst, seg));
+                        if(soc == null) {
+                            DAOFactory.getSocioDao().insertar(new SocioEstandar(nombre, apellido, nifEst, seg));
+                        }else{
+                            System.out.println("ESTADFASDNASDF¿ASDFNJMASDF");
+                            if(soc instanceof SocioEstandar){
+                                ((SocioEstandar)soc).setNif(nifEst);
+                                ((SocioEstandar)soc).setSeguro(seg);
+                            }
+                            DAOFactory.getSocioDao().modificar(soc);
+                        }
                         break;
                     case "FEDERADO":
                         String nifFed = nifField.getText();
                         String codigo = codigoField.getText();
                         String nombreFed = nombreFedField.getText();
-                        if (nifFed.isEmpty() || codigo.isEmpty() || existeNif(nifFed)) {
+                        if(soc == null){
+                            if(existeNif(nifFed)){
+                                Alert alert = new Alert(Alert.AlertType.ERROR, "Nif ya registrado");
+                                alert.show();
+                                return null;
+                            }
+                        }
+                        if (nifFed.isEmpty() || codigo.isEmpty() ) {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
                             alert.show();
                             return null;
                         }
                         Federacion fed = new Federacion(codigo, nombreFed);
                         DAOFactory.getFederacionDao().insertar(fed);
-                        DAOFactory.getSocioDao().insertar(new SocioFederado(nombre, apellido, nifFed, fed));
+                        if(soc == null) {
+                            DAOFactory.getSocioDao().insertar(new SocioFederado(nombre, apellido, nifFed, fed));
+                        }else{
+                            System.out.println("ASDFISOFSPDOFJEAFMSOEJF");
+                            if(soc instanceof SocioFederado){
+                                ((SocioFederado)soc).setNif(nifFed);
+                                ((SocioFederado)soc).setFederacion(fed);
+                            }
+                            DAOFactory.getSocioDao().modificar(soc);
+                        }
                         break;
                     case "INFANTIL":
                         int tutor = Integer.parseInt(tutorField.getText());
                         if (tutor == 0 ) {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, complete todos los campos.");
+                            System.out.println("1- " + tutor);
                             alert.show();
                             return null;
                         }
-                        DAOFactory.getSocioDao().insertar(new SocioInfantil(nombre, apellido, tutor));
+                        if(soc == null) {
+                            DAOFactory.getSocioDao().insertar(new SocioInfantil(nombre, apellido, tutor));
+                        }else {
+                            System.out.println("INDFASDFSDIFPLASJKFASLD");
+
+                            if (soc instanceof SocioInfantil) {
+                                ((SocioInfantil) soc).setNoTutor(tutor);
+                            }
+                            DAOFactory.getSocioDao().modificar(soc);
+                        }
                         break;
                 }
                 cargarTablaSocios();
