@@ -6,7 +6,7 @@
 
 <StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.ExcursionControlador">
     <VBox StackPane.alignment="CENTER" prefHeight="400" prefWidth="500" spacing="15">
-        <Label style="-fx-font-size: 50px; -fx-font-weight: bold;" text="Gestión de Excursiones" />
+        <Label alignment="center" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Gestión de Excursiones" />
         <Region prefHeight="20.0" prefWidth="600.0" />
         <HBox prefHeight="26.0" prefWidth="600.0">
             <Button onAction="#novaExc" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
