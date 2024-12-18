@@ -20,7 +20,7 @@
     -fx-border-radius: 5px;
     -fx-pref-width: 225px;
     -fx-padding: 20px;
-    -fx-margin: 5px;
+    -fx-margin: 0px;
     -fx-effect: dropshadow(three-pass-box, black, 5, 0.5, 0, 0);
 }
 
@@ -63,19 +63,19 @@
 }
 
 .button {
-    -fx-background-color: linear-gradient(to bottom, #6b8e23, #556b2f); /* Tonos verdes de naturaleza */
-    -fx-text-fill: white; /* Texto blanco para contraste */
-    -fx-font-size: 16px; /* Tamaño de texto */
-    -fx-font-weight: bold; /* Negrita para más impacto */
-    -fx-border-radius: 5px; /* Bordes redondeados para un toque moderno */
-    -fx-padding: 10 20; /* Espaciado interno */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0.5, 2, 2); /* Sombra para profundidad */
-    -fx-border-color: #3e4e28; /* Borde marrón similar a la madera */
-    -fx-border-width: 2px; /* Ancho de borde para un efecto de robustez */
-    -fx-cursor: hand; /* Cursor de mano cuando se pasa sobre el botón */
-    -fx-background-insets: 0, 1; /* El efecto de profundidad hace que el botón sea más atractivo */
-    -fx-pref-width: 150px; /* Ancho preferido del botón */
-    -fx-pref-height: 50px; /* Altura preferida del botón */
+    -fx-background-color: linear-gradient(to bottom, #6b8e23, #556b2f);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5px;
+    -fx-padding: 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0.5, 2, 2);
+    -fx-border-color: #3e4e28;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+    -fx-background-insets: 0, 1;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
 }
 
 .button:hover {

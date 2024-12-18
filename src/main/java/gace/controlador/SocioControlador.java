@@ -12,12 +12,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.fxml.FXML;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -25,6 +32,8 @@ import javafx.collections.FXCollections;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+
 
 import static javafx.geometry.Pos.CENTER;
 
@@ -80,34 +89,39 @@ public class SocioControlador {
 
     private void setLabelStyle(Label... labels) {
         for (Label label : labels) {
-            label.setStyle("-fx-background-color: lightgreen; -fx-padding: 10; -fx-alignment: center;");
+            label.setStyle("-fx-background-color: lightgreen; -fx-padding: 0; -fx-alignment: center;");
             label.setMaxWidth(Double.MAX_VALUE);
             label.setAlignment(CENTER);
             //Pos.CENTER
         }
     }
     public void mostrarDetalle(Socio soc){
+        Image img = new Image(String.valueOf(getClass().getResource("/image/MONT.png")));
+        ImageView imgV = new ImageView(img);
         Stage modalStage = new Stage();
+
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Detalles Socio " + soc.getIdSocio());
         Button cancelarExcursio = new Button("Eliminar socio");
         cancelarExcursio.setOnAction(event -> {
             borrarSocio(soc);
             modalStage.close();
-
         });
         GridPane grid = null;
         Label excLabel = null;
         List<Inscripcion> insc;
+//        imgV.setFitWidth(420); // 841X266
+//        imgV.setFitHeight(133);
+        imgV.setPreserveRatio(false);
         //VBox o posem StackPane?
         if(soc instanceof SocioEstandar){
-            grid = mostrarSocioEst((SocioEstandar) soc);
+            grid = mostrarSocioEst((SocioEstandar) soc, imgV);
             insc = DAOFactory.getInscripcionDao().ListarXSocioEst(soc);
         }else if(soc instanceof SocioFederado){
-            grid = mostrarSocioFed((SocioFederado) soc);
+            grid = mostrarSocioFed((SocioFederado) soc, imgV);
             insc = DAOFactory.getInscripcionDao().ListarXSocioFed(soc);
         }else if(soc instanceof SocioInfantil){
-            grid = mostrarSocioInf((SocioInfantil) soc);
+            grid = mostrarSocioInf((SocioInfantil) soc, imgV);
             insc = DAOFactory.getInscripcionDao().ListarXSocioInf(soc);
         } else {
             insc = null;
@@ -115,18 +129,15 @@ public class SocioControlador {
         if(grid == null){
             return;
         }
-        if(insc == null){
-            excLabel = new Label("Excursiones Inscritas: 0");
-        }else{
-            excLabel = new Label("Excursiones Inscritas: " + insc.size());
-            excLabel.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-            excLabel.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2) {
-                    mostrarInsc(insc, soc);
-                }
-            });
-        }
+        excLabel = new Label("Excursiones Inscritas: " + insc.size());
+        excLabel.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        excLabel.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                mostrarInsc(insc, soc);
+            }
+        });
 
         Button crearInscripcion = new Button("Crear Inscripción");
         crearInscripcion.setOnAction(event -> {
@@ -140,9 +151,6 @@ public class SocioControlador {
             modalStage.close();
             cargarTablaSocios();
         });
-        grid.setPadding(new Insets(10));
-        grid.setHgap(10);
-        grid.setVgap(10);
         grid.setAlignment(Pos.CENTER);
         grid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
@@ -186,7 +194,7 @@ public class SocioControlador {
         modalStage.showAndWait();
     }
 
-    private GridPane mostrarSocioEst(SocioEstandar soc){
+    private GridPane mostrarSocioEst(SocioEstandar soc, ImageView img){
         GridPane grid = new GridPane();
 
         Label idSoc = new Label("ID: " + soc.getIdSocio());
@@ -197,33 +205,57 @@ public class SocioControlador {
         Label segudoSoc = new Label("Tipo de Seguro: " + (soc.getSeguro().isTipo() ? "Completo" : "Estándar") + " - (" + soc.getSeguro().getPrecio()+")");
 
         Label nifSoc = new Label("Nif: "+ soc.getNif());
-        grid.add(idSoc, 0, 0, 3,1);
-        grid.add(nifSoc, 3, 0, 3,1);
+        img.setFitWidth(600); // 841X266
+        img.setFitHeight(190);
+        img.setPreserveRatio(false);
+        idSoc.setAlignment(CENTER);
+        nombreSoc.setAlignment(CENTER);
+        grid.add(img, 0,0,6,1);
+        grid.add(idSoc, 0, 1, 3,1);
+        grid.add(nifSoc, 3, 1, 3,1);
 
         setLabelStyle(nombreSoc, apellidoSoc);
-        grid.add(nombreSoc, 0, 1,3,1);
-        grid.add(apellidoSoc, 3, 1,3,1);
+        grid.add(nombreSoc, 0, 2,3,1);
+        grid.add(apellidoSoc, 3, 2,3,1);
 
         segudoSoc.setStyle("-fx-background-color: lightgreen; -fx-padding: 20;");
         segudoSoc.setMaxWidth(Double.MAX_VALUE);
         segudoSoc.setAlignment(CENTER);
-        grid.add(segudoSoc, 0, 2, 6, 2);
+        grid.add(segudoSoc, 0, 3, 6, 1);
         return grid;
     }
-    private GridPane mostrarSocioFed(SocioFederado soc){
+    private GridPane mostrarSocioFed(SocioFederado soc, ImageView img){
         GridPane grid = new GridPane();
-        Label idSoc = new Label("ID: " + String.valueOf(soc.getIdSocio()));
 
-        Label nomSoc = new Label("Nombre: " + soc.getNombre());
+        Label idSoc = new Label("ID: " + soc.getIdSocio());
 
-        Label cgnomSoc = new Label("Apellido: " + soc.getApellido());
+        Label nombreSoc = new Label("Nombre: " + soc.getNombre());
 
-        Label nifSoc = new Label("Nif: " + soc.getNif());
+        Label apellidoSoc = new Label("Apellido: " + soc.getApellido());
 
-        Label segSoc = new Label("Tipo de Seguro" + soc.getFederacion().getCodigo() + " - " + soc.getFederacion().getNombre());
+        Label nifSoc = new Label("Nif: "+ soc.getNif());
+
+        Label fedeSoc = new Label("Tipo de Federación: " + soc.getFederacion().getIdFederacion() + " - " + soc.getFederacion().getNombre());
+        img.setFitWidth(600); // 841X266
+        img.setFitHeight(190);
+        img.setPreserveRatio(false);
+        idSoc.setAlignment(CENTER);
+        nombreSoc.setAlignment(CENTER);
+        grid.add(img, 0,0,6,1);
+        grid.add(idSoc, 0, 1, 3,1);
+        grid.add(nifSoc, 3, 1, 3,1);
+
+        setLabelStyle(nombreSoc, apellidoSoc);
+        grid.add(nombreSoc, 0, 2,3,1);
+        grid.add(apellidoSoc, 3, 2,3,1);
+
+        fedeSoc.setStyle("-fx-background-color: lightgreen; -fx-padding: 20;");
+        fedeSoc.setMaxWidth(Double.MAX_VALUE);
+        fedeSoc.setAlignment(CENTER);
+        grid.add(fedeSoc, 0, 3, 6, 1);
         return grid;
     }
-    private GridPane mostrarSocioInf(SocioInfantil soc){
+    private GridPane mostrarSocioInf(SocioInfantil soc, ImageView img){
         GridPane grid = new GridPane();
         grid.add(new Label("ID: " ), 0, 0);
         grid.add(new Label(String.valueOf(soc.getIdSocio())), 1, 0);
