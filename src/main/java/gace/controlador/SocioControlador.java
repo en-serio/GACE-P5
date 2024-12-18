@@ -15,6 +15,8 @@ import javafx.fxml.FXML;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import javafx.event.ActionEvent;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -463,7 +465,6 @@ public class SocioControlador {
         });
     }
 
-
     @FXML
     private void handleModificar(ActionEvent event) {
         // Crear un cuadro de entrada para que el usuario ingrese el ID del socio a modificar
@@ -488,10 +489,10 @@ public class SocioControlador {
                     TextField apellidoField = new TextField(socioAModificar.getApellido());
                     ComboBox<String> tipoSocioCombo = new ComboBox<>();
                     tipoSocioCombo.getItems().addAll("ESTÁNDAR", "FEDERADO", "INFANTIL");
-                    tipoSocioCombo.setValue(getTipoSocio(socioAModificar));
+                    tipoSocioCombo.setValue(getTipoSocio(socioAModificar)); // Establecer el valor correcto en el ComboBox
 
                     // Crear el diálogo
-                    Dialog<String> modificarDialog = new Dialog<>();
+                    Dialog<ButtonType> modificarDialog = new Dialog<>();
                     modificarDialog.setTitle("Modificar Socio");
                     modificarDialog.setHeaderText("Modifique los datos del socio:");
 
@@ -505,50 +506,69 @@ public class SocioControlador {
                             new Label("Tipo de Socio:"), tipoSocioCombo);
                     modificarDialog.getDialogPane().setContent(vbox);
 
+                    // Manejar la respuesta del usuario (si hizo clic en "Guardar")
+                    Optional<ButtonType> result = modificarDialog.showAndWait();
+                    if (result.isPresent() && result.get() == buttonTypeOk) {
+                        String nuevoNombre = nombreField.getText();
+                        String nuevoApellido = apellidoField.getText();
+                        String nuevoTipoSocio = tipoSocioCombo.getValue();
 
-//                    modificarDialog.showAndWait().ifPresent(result -> {
-//                        String nuevoNombre = nombreField.getText();
-//                        String nuevoApellido = apellidoField.getText();
-//                        String nuevoTipoSocio = tipoSocioCombo.getValue();
-//                            // Actualizar el socio existente con los nuevos datos
-//                            socioAModificar.setNombre(nuevoNombre);
-//                            socioAModificar.setApellido(nuevoApellido);
-//
-//                            // Si el tipo de socio cambia, convertirlo al nuevo tipo
-//                            if (!getTipoSocio(socioAModificar).equals(nuevoTipoSocio)) {
-//                                Socio socioNuevo = null;
-//                                switch (nuevoTipoSocio) {
-//                                    case "ESTÁNDAR":
-//                                        socioNuevo = new SocioEstandar(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF123", new Seguro(1, true, 40));
-//                                        break;
-//                                    case "FEDERADO":
-//                                        socioNuevo = new SocioFederado(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF456", new Federacion("020", "0202"));
-//                                        break;
-//                                    case "INFANTIL":
-//                                        socioNuevo = new SocioInfantil(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, 123);
-//                                        break;
-//                                }
-//
-//                                // Reemplazar en la lista
-//                                listaSocios.set(listaSocios.indexOf(socioAModificar), socioNuevo);
-//                            }
-//
-//                            // Actualizar la tabla
-//                            tablaSocios.setItems(listaSocios);
-//                            tablaSocios.refresh();  // Forzar actualización de la tabla
-//                        }
-//                    });
+                        // Actualizar el socio existente con los nuevos datos
+                        socioAModificar.setNombre(nuevoNombre);
+                        socioAModificar.setApellido(nuevoApellido);
 
+                        // Si el tipo de socio cambia, crear el nuevo socio con el tipo actualizado
+                        if (!getTipoSocio(socioAModificar).equals(nuevoTipoSocio)) {
+                            Socio socioNuevo = null;
+                            switch (nuevoTipoSocio) {
+                                case "ESTÁNDAR":
+                                    socioNuevo = new SocioEstandar(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF123", new Seguro(1, true, 40));
+                                    break;
+                                case "FEDERADO":
+                                    socioNuevo = new SocioFederado(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, "NIF456", new Federacion("020", "0202"));
+                                    break;
+                                case "INFANTIL":
+                                    socioNuevo = new SocioInfantil(socioAModificar.getIdSocio(), nuevoNombre, nuevoApellido, 123);
+                                    break;
+                            }
+
+                            // Reemplazar el socio antiguo por el nuevo en la lista
+                            listaSocios.remove(socioAModificar);
+                            listaSocios.add(socioNuevo);
+                            socioAModificar = socioNuevo; // Ahora socioAModificar se convierte en el socio nuevo
+                        }
+
+                        // Actualizar la tabla
+                        tablaSocios.setItems(listaSocios);
+                        tablaSocios.refresh();  // Forzar actualización de la tabla
+
+                        // Modificar el socio en la base de datos
+                        if (socioAModificar instanceof SocioEstandar) {
+                            DAOFactory.getSocioEstandarDao().modificar((SocioEstandar) socioAModificar);
+                        } else if (socioAModificar instanceof SocioFederado) {
+                            DAOFactory.getSocioFederadoDao().modificar((SocioFederado) socioAModificar);
+                        } else if (socioAModificar instanceof SocioInfantil) {
+                            DAOFactory.getSocioInfantilDao().modificar((SocioInfantil) socioAModificar);
+                        }
+
+                        // Mostrar mensaje de éxito
+                        datosUtil.mostrarMensaje("Socio modificado", "El socio con ID " + idSocio + " ha sido modificado.");
+                    }
                 } else {
-                    datosUtil.mostrarError("Socio no encontrado No se encontró un socio con el ID " + idSocio + ".");
+                    // Mostrar mensaje de error si no se encontró el socio
+                    datosUtil.mostrarError("No se encontró un socio con el ID " + idSocio + ".");
                 }
             } catch (NumberFormatException e) {
-                datosUtil.mostrarError("ID no válido El ID ingresado no es válido.");
+                // Mostrar error si el ID ingresado no es un número válido
+                datosUtil.mostrarError("El ID ingresado no es válido.");
             }
         });
     }
 
-    // Método auxiliar para determinar el tipo de socio como String
+
+
+
+
     private String getTipoSocio(Socio socio) {
         if (socio instanceof SocioEstandar) {
             return "ESTÁNDAR";
@@ -557,8 +577,9 @@ public class SocioControlador {
         } else if (socio instanceof SocioInfantil) {
             return "INFANTIL";
         }
-        return "";
+        return null;
     }
+
 
 
 
