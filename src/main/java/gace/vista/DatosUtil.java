@@ -1,5 +1,7 @@
 package gace.vista;
 
+import javafx.scene.control.Alert;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -215,6 +217,15 @@ public class DatosUtil {
 
     public void mostrarInfo(String mensaje){
         System.out.println(mensaje);
+    }
+
+    public void mostrarMensaje(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);  // Título de la alerta
+        alert.setHeaderText(null);  // No se muestra encabezado
+        alert.setContentText(mensaje);  // El mensaje que se va a mostrar
+
+        alert.showAndWait();  // Muestra la alerta y espera que el usuario la cierre
     }
 
 }

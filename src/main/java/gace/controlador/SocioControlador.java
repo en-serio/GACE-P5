@@ -420,35 +420,49 @@ public class SocioControlador {
 
         // Mostrar el diálogo y obtener el ID ingresado por el usuario
         dialog.showAndWait().ifPresent(idInput -> {
-            // Intentamos convertir el ID ingresado a un número
             try {
-                int idSocio = Integer.parseInt(idInput);  // Convertir el ID ingresado a un entero
+                // Convertir el ID ingresado a un número
+                int idSocio = Integer.parseInt(idInput);
 
-                // Buscar el socio en la lista usando el ID
-                Socio socioAEliminar = null;
-                for (Socio socio : listaSocios) {
-                    if (socio.getIdSocio() == idSocio) {
-                        socioAEliminar = socio;
-                        break;
+                // Buscar el socio en la base de datos
+                Socio socio = DAOFactory.getSocioDao().buscar(idSocio);
+
+                if (socio != null) {
+                    // Eliminar según el tipo de socio
+                    if (socio instanceof SocioEstandar) {
+                        SocioEstandar socioEstandar = (SocioEstandar) socio;
+                        Seguro seguro = socioEstandar.getSeguro();
+                        DAOFactory.getSocioEstandarDao().eliminar(idSocio);
+                        DAOFactory.getSeguroDao().eliminar(seguro.getIdSeguro());
+                    } else if (socio instanceof SocioFederado) {
+                        SocioFederado socioFederado = (SocioFederado) socio;
+                        Federacion federacion = socioFederado.getFederacion();
+                        DAOFactory.getSocioFederadoDao().eliminar(idSocio);
+                        DAOFactory.getFederacionDao().eliminar(federacion.getIdFederacion());
+                    } else if (socio instanceof SocioInfantil) {
+                        DAOFactory.getSocioInfantilDao().eliminar(idSocio);
                     }
-                }
 
-                // Si encontramos el socio con el ID, lo eliminamos
-                if (socioAEliminar != null) {
-                    listaSocios.remove(socioAEliminar);  // Eliminar de la lista
-                    tablaSocios.setItems(listaSocios);  // Actualizar la tabla
-                    datosUtil.mostrarError("Socio eliminado El socio con ID " + idSocio + " ha sido eliminado.");
+                    // Actualizar la lista de socios desde la base de datos
+                    listaSocios.setAll(DAOFactory.getSocioDao().listar());
+
+                    // Actualizar la tabla con la lista actualizada
+                    tablaSocios.setItems(listaSocios);
+
+                    // Mostrar mensaje de éxito
+                    datosUtil.mostrarMensaje("Socio eliminado", "El socio con ID " + idSocio + " ha sido eliminado.");
                 } else {
-                    // Si no se encuentra el socio
-                    datosUtil.mostrarError("Socio no encontrado No se encontró un socio con el ID " + idSocio + ".");
+                    datosUtil.mostrarError("No se encontró un socio con el ID " + idSocio + ".");
                 }
 
             } catch (NumberFormatException e) {
-                // Si el ID no es un número válido
-                datosUtil.mostrarError("ID no válido El ID ingresado no es válido.");
+                datosUtil.mostrarError("El ID ingresado no es válido.");
+            } catch (Exception e) {
+                datosUtil.mostrarError("Ocurrió un error al eliminar el socio: " + e.getMessage());
             }
         });
     }
+
 
     @FXML
     private void handleModificar(ActionEvent event) {
