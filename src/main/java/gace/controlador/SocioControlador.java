@@ -600,7 +600,7 @@ public class SocioControlador {
                 // Si el socio se encuentra
                 if (socioAModificar != null) {
                     handleRegistrar(socioAModificar);
-                    modalStage.close();
+                    dialog.close();
                     cargarTablaSocios();
                 } else {
                     // Mostrar mensaje de error si no se encontró el socio
