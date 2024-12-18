@@ -1,21 +1,14 @@
 package gace.modelo.dao;
 
 import gace.modelo.*;
-import gace.modelo.utils.BBDDUtil;
 import gace.modelo.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.hibernate.tool.schema.internal.IndividuallySchemaMigratorImpl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 
 public class InscripcionDao implements DAO<Inscripcion>{
 

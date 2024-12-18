@@ -1,6 +1,5 @@
 package gace.controlador;
 
-import com.mysql.cj.result.Row;
 import gace.modelo.Excursion;
 import gace.modelo.Inscripcion;
 import gace.modelo.Socio;
@@ -12,22 +11,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jdk.jfr.Percentage;
-import org.hibernate.tool.schema.internal.IndividuallySchemaMigratorImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
