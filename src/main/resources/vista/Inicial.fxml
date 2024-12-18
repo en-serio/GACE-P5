@@ -12,7 +12,7 @@
             <Font size="50.0" />
          </font>
       </Text>
-      <Text layoutX="65.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis bibendum felis quis accumsan. Etiam sit amet quam viverra, venenatis sem vitae, ultrices turpis. Nulla facilisi. Cras lacus dui, consectetur a interdum sed, ornare ut mi. Donec vitae elit ut lacus hendrerit feugiat. Curabitur purus enim, finibus et egestas ut, bibendum nec leo. Phasellus feugiat est ut pharetra gravida. Quisque feugiat eu tortor eget condimentum. Suspendisse lacinia sapien ac tortor suscipit varius.Sed ac ante at ante consequat ultricies quis eu diam. Suspendisse auctor magna eu sapien accumsan ultricies. Vivamus a ex eu justo suscipit eleifend. Ut congue blandit dolor in viverra. Duis aliquam nisl libero." wrappingWidth="470.13677978515625">
+      <Text layoutX="65.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bienvenido a nuestra aplicacion de Senderos y montañas! Somos el grupo GACE TECNOLOGIES, formado por: Genís Pascual, Enrique Serrano, Carles Julià Enrich y Albert Recuero" wrappingWidth="470.13677978515625">
          <font>
             <Font size="14.0" />
          </font>

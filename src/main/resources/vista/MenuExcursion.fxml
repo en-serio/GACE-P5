@@ -5,19 +5,10 @@
 <?import javafx.scene.text.*?>
 
 <StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gace.controlador.ExcursionControlador">
-    <VBox StackPane.alignment="CENTER" prefHeight="400" prefWidth="500" spacing="15">
-        <Label style="-fx-font-size: 50px; -fx-font-weight: bold;" text="Gestión de Excursiones" />
-        <Region prefHeight="20.0" prefWidth="600.0" />
-        <HBox prefHeight="26.0" prefWidth="600.0">
-            <Button onAction="#novaExc" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
+    <VBox alignment="CENTER" prefHeight="400" prefWidth="500" spacing="15">
+        <Label alignment="center" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Gestión de Excursiones" />
 
-            <Region prefHeight="26.0" HBox.hgrow="ALWAYS" />
-
-            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="61.0" text="Buscar" onAction="#buscarExcursiones"/>
-        </HBox>
-        <Region prefHeight="20.0" prefWidth="600.0" />
-
-        <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
+        <TableView fx:id="tableView" prefHeight="250" prefWidth="450">
             <columns>
                 <TableColumn fx:id="columnId" text="ID" />
                 <TableColumn fx:id="columnCodigo" text="Código" />
@@ -27,5 +18,16 @@
                 <TableColumn fx:id="columnPrecio" prefWidth="78.5999755859375" text="Precio" />
             </columns>
         </TableView>
+
+
+        <HBox alignment="CENTER" spacing="10">
+            <Button onAction="#novaExc" prefHeight="26.0" prefWidth="98.0" text="Nova Excursio" />
+
+            <Region prefHeight="26.0" HBox.hgrow="ALWAYS" />
+
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="61.0" text="Buscar" onAction="#buscarExcursiones"/>
+        </HBox>
+
+
     </VBox>
 </StackPane>
